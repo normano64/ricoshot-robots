@@ -1,0 +1,37 @@
+#+TITLE: Ricoshot Robots specification 
+#+AUTHOR: Per Bergqwist \and John Davey \and Johan Lundgren
+#+OPTIONS: toc:nil
+
+* Introduction
+
+  A board game like Ricochet robots, but web based. Users will be able
+  to create a room and invite friends to play together. When the game
+  master is ready he or she can start the game. Players will try to
+  solve the puzzle in as few steps as possible while under time
+  constraint and then submit it. The player solutions will be compared
+  and the user with the fewest steps and first to submit it win the
+  round and then the next round begins afterwards.
+
+* Required technical features
+
+  - Animations
+  - Responsive interface
+  - Interaction with graphics
+  - Tutorial system
+  - Sound effects
+  - Multilingual interface
+  - Undo and redo
+
+* Game based features
+
+  - Be able to make moves which are undo-able before committing to the move i.e sending to server.
+  - Be able to improve on your number of moves
+  - Server checks validity of paths
+  - Turn timer visible for everybody
+  - Step by step visual tutorial for how to play the game
+  - When reaching the goal the solution a replay of movement will be shown
+  - Public and private game rooms
+  - Player stats at the end of the game
+  - Awards (maybe)
+  - Sound when robot moves
+  - Drinking game mode
