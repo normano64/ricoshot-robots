@@ -1,4 +1,4 @@
-#+TITLE: Ricoshot Robots specification 
+#+TITLE: Ricoshot Robots specification
 #+AUTHOR: Per Bergqwist \and John Davey \and Johan Lundgren
 #+OPTIONS: toc:nil
 
