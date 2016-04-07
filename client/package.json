@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "vue": "^1.0.20",
-    "vue-router": "^0.7.11",
-    "waterfall.js": "^1.0.3"
+    "vue-router": "^0.7.11"
   }
 }
