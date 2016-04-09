@@ -5,12 +5,12 @@
         }
     }
     @else if $media == medium {
-        @media only screen and (min-width:481px) and (max-width:840px) {
+        @media only screen and (min-width:481px) and (max-width:1000px) {
             @content;
         }
     }
     @else if $media == small-medium {
-        @media only screen and (max-width:840px) {
+        @media only screen and (max-width:1000px) {
             @content;
         }
     }

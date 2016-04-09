@@ -21,6 +21,9 @@
     padding:0;
     outline:none;
 }
+input {
+    font-family:'Open Sans', sans-serif;
+}
 svg.icon {
     vertical-align:bottom;
     display:inline-block;
@@ -37,4 +40,5 @@ body {
     padding:0;
     font-family:'Open Sans', sans-serif;
     background:$background;
+    min-width:360px;
 }
