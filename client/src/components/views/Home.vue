@@ -1,20 +1,19 @@
 <template>
     <div id="create">
         <h2>Start a new game</h2>
-        <form>
-            <input type="text" name="name" placeholder="Game name" autocomplete="off"/>
-            <input type="text" name="nick" placeholder="Nickname" autocomplete="off"/>
-            <label :class="{'active': checkPrivate}">
-                <svg class="icon" v-if="checkPrivate"><use xlink:href="static/sprite.svg#icon-checkbox"/></svg>
-                <svg class="icon" v-if="!checkPrivate"><use xlink:href="static/sprite.svg#icon-checkbox-blank"/></svg>
-                <input type="checkbox" v-model="checkPrivate"/>Private game
+        <form @submit.prevent="createRoom">
+            <input type="text" v-model="name" placeholder="Game name" autocomplete="off"/>
+            <label :class="{'active': isPublic}">
+                <svg class="icon" v-if="isPublic"><use xlink:href="static/sprite.svg#icon-checkbox"/></svg>
+                <svg class="icon" v-if="!isPublic"><use xlink:href="static/sprite.svg#icon-checkbox-blank"/></svg>
+                <input type="checkbox" v-model="isPublic"/>Public game
             </label>
-            <label :class="{'active': checkDrink}">
-                <svg class="icon" v-if="checkDrink"><use xlink:href="static/sprite.svg#icon-checkbox"/></svg>
-                <svg class="icon" v-if="!checkDrink"><use xlink:href="static/sprite.svg#icon-checkbox-blank"/></svg>
-                <input type="checkbox" v-model="checkDrink"/>Drinking mode
+            <label :class="{'active': drinking}">
+                <svg class="icon" v-if="drinking"><use xlink:href="static/sprite.svg#icon-checkbox"/></svg>
+                <svg class="icon" v-if="!drinking"><use xlink:href="static/sprite.svg#icon-checkbox-blank"/></svg>
+                <input type="checkbox" v-model="drinking"/>Drinking mode
             </label>
-            <input type="submit" name="query" value="Create game"/>
+            <input type="submit" value="Create game"/>
         </form>
     </div>
     <div id="roomlist">
@@ -25,40 +24,43 @@
         </label>
         <ul>
             <li v-for="room in rooms | filterBy searchQuery in 'name'">
-                <a v-link="'/room/' + room.id">
+                <a v-link="'/room/' + room.uuid">
                     <div>
                         <span class="name">{{room.name}}</span>
-                        <span>{{room.players}} players</span>
+                        <span>{{room.players}} {{room.players | plural 'player'}}, {{room.turns}} {{room.turns | plural 'turn'}} played</span>
                     </div>
+                    <svg class="icon" v-if="room.drinking"><use xlink:href="static/sprite.svg#icon-drink"/></svg>
                     <svg class="icon"><use xlink:href="static/sprite.svg#icon-join"/></svg>
                 </a>
             </li>
             <li class="error" v-if="!rooms.length">There's no public games right now</li>
-            <li class="error" v-if="!filteredRooms.length">No games found</li>
+            <li class="error" v-if="!filteredRooms.length && searchQuery">No games found</li>
         </ul>
     </div>
 </template>
 
 <script>
+ import _ from 'lodash';
+ import api from '../../api.js';
+
  export default {
      name: 'HomeView',
      data () {
          return {
+             isPublic: false,
+             drinking: false,
+             name: '',
              searchQuery: '',
-             rooms: [
-                 {
-                     id: '123',
-                     name: 'Ost',
-                     players: '1337',
-                     rounds: '3'
-                 },
-                 {
-                     id: '1234',
-                     name: 'Hest',
-                     players: '1337',
-                     rounds: '3'
-                 }
-             ]
+             rooms: []
+         }
+     },
+     filters: {
+         plural: function(value, word) {
+             if(value == 1) {
+                 return word;
+             } else {
+                 return word + 's';
+             }
          }
      },
      computed: {
@@ -66,8 +68,42 @@
              return this.$options.filters.filterBy(this.rooms, this.searchQuery);
          }
      },
+     methods: {
+         newRoom(room) {
+             console.log(room);
+             this.rooms.push(room);
+         },
+         removeRoom(uuid) {
+             var index = _.findIndex(this.rooms, { uuid: uuid });
+             if(index != -1) {
+                 this.rooms.splice(index, 1);
+             }
+         },
+         currentRooms(rooms) {
+             this.rooms = rooms;
+         },
+         playersInRoom(uuid, numPlayers) {
+             rooms[_.findIndex(this.rooms, { uuid: uuid })].players = numPlayers;
+         },
+         createRoom() {
+             api.createRoom(this.name, this.isPublic, this.drinking);
+         }
+     },
      attached () {
-         this.$dispatch('changeTitle', 'Home');
+         this.$dispatch('changeTitle');
+     },
+     created () {
+         api.currentRooms();
+         api.on('newRoom', this.newRoom);
+         api.on('removeRoom', this.removeRoom);
+         api.on('currentRooms', this.currentRooms);
+         api.on('playersInRoom', this.playersInRoom);
+     },
+     destroyed () {
+         api.removeListener('newRoom', this.newRoom);
+         api.removeListener('removeRoom', this.removeRoom);
+         api.removeListener('currentRooms', this.currentRooms);
+         api.removeListener('playersInRoom', this.playersInRoom);
      }
  }
 </script>
@@ -86,16 +122,6 @@
      form {
          width:300px;
          margin:0 auto;
-         input[type=text] {
-             display:block;
-             font-size:1.1em;
-             padding:0 12px;
-             line-height:36px;
-             margin:6px 0;
-             border:1px solid $gray-light;
-             color:$gray;
-             width:100%;
-         }
          label {
              color:$gray;
              cursor:pointer;
@@ -104,10 +130,10 @@
              user-select:none;
              line-height:38px;
              margin:6px 0;
-             background:$white-dark;
+             /* background:$white-dark; */
              text-align:center;
              &.active {
-                 background:$gray-light;
+                 /* background:$gray-light; */
                  color:$primary;
                  svg.icon {
                      fill:$primary;
@@ -123,19 +149,6 @@
                  float:left;
                  fill:$gray;
              }
-         }
-         input[type=submit] {
-             display:block;
-             font-size:1.1em;
-             padding:0 12px;
-             line-height:36px;
-             margin:6px 0;
-             border:0;
-             color:white;
-             background:$primary;
-             width:100%;
-             margin:6px 0;
-             cursor:pointer;
          }
      }
      @include respond-to(small-medium) {
@@ -198,6 +211,9 @@
                          height:24px;
                          width:24px;
                          margin:7px 0 7px;
+                         + svg.icon {
+                             margin-left:8px;
+                         }
                      }
                  }
                  &:hover, &:active {

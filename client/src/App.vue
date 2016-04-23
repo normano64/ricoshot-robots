@@ -1,23 +1,54 @@
 <template>
     <header-partial></header-partial>
     <div id="main">
-        <router-view keep-alive></router-view>
+        <router-view></router-view>
     </div>
+    <nick-modal-partial v-if="nickModal" transition="top"></nick-modal-partial>
+    <overlay-partial v-if="overlay" transition="opacity"></overlay-partial>
 </template>
 
 <script>
+ import api from './api.js';
  import HeaderPartial from './components/partials/Header.vue';
+ import NickModalPartial from './components/partials/NickModal.vue';
+ import OverlayPartial from './components/partials/Overlay.vue';
  
  export default {
      name: 'App',
      components: {
-         HeaderPartial
+         HeaderPartial,
+         NickModalPartial,
+         OverlayPartial
+     },
+     data() {
+         return {
+             nickModal: false,
+             overlay: false
+         }
      },
      events: {
-         changeTitle (title) {
-             document.title = title+' | Ricoshot Robots';
-             return true;
+         changeTitle(title) {
+             if(title) {
+                 document.title = title + ' | Ricoshot Robots';
+             } else {
+                 document.title = 'Ricoshot Robots';
+             }
+         },
+         showNickModal() {
+             this.nickModal = true;
+             this.overlay = true;
+         },
+         hideNickModal() {
+             this.nickModal = false;
+             this.overlay = false;
+         },
+         hideOverlay() {
+             this.nickModal = false;
+             this.overlay = false;
          }
+     },
+     destoryed() {
+         api.disconnect();
      }
  }
 </script>

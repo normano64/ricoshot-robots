@@ -1,0 +1,15 @@
+{
+  "name": "ricoshot-robots-server",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.13.4",
+    "lodash": "^4.11.1",
+    "node-uuid": "^1.4.7",
+    "socket.io": "^1.4.5"
+  }
+}
