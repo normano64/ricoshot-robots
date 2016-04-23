@@ -1,9 +1,9 @@
 <template>
     <header id="header">
         <div class="container">
-            <span id="brand">Ricoshot Robots</span>
+            <span id="brand" v-link="'/'">Ricoshot Robots</span>
             <span class="right" @click="$dispatch('showNickModal')">
-                {{ nick }}<svg class="icon"><use xlink:href="static/sprite.svg#icon-person"/></svg>
+                {{ nick }}<svg class="icon"><use xlink:href="/static/sprite.svg#icon-person"/></svg>
             </span>
         </div>
     </header>
@@ -50,14 +50,19 @@
          @include respond-to(small-medium) {
              width:100%;
          }
-         span:not(#brand) {
+         span {
              padding:0 12px;
              cursor:pointer;
+             line-height:54px;
+             float:left;
              svg.icon {
                  height:24px;
                  width:25px;
                  fill:white;
                  margin:15px 0 15px 8px;
+             }
+             &.right {
+                 float:right;
              }
              &:hover {
                  background:white;
@@ -72,7 +77,5 @@
  #brand {
      font-size:1.1em;
      font-weight:700;
-     padding:0 12px;
-     cursor:default;
  }
 </style>

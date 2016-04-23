@@ -29,7 +29,7 @@
      events: {
          changeTitle(title) {
              if(title) {
-                 document.title = title + ' | Ricoshot Robots';
+                 document.title = 'Ricoshot Robots ' + title;
              } else {
                  document.title = 'Ricoshot Robots';
              }
@@ -47,7 +47,20 @@
              this.overlay = false;
          }
      },
+     methods: {
+         goRoom(uuid) {
+             if(uuid != 'home') {
+                 this.$router.go('/room/' + uuid);
+             } else {
+                 this.$router.go('/');
+             }
+         }
+     },
+     created() {
+         api.on('goRoom', this.goRoom);
+     },
      destoryed() {
+         api.removeListener('goRoom', this.goRoom);
          api.disconnect();
      }
  }

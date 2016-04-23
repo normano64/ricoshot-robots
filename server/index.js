@@ -23,6 +23,7 @@ var rooms = [{
     turns: 0,
 }];
 var users = [];
+var emptyRooms = [];
 
 // Handles socket.io connections.
 io.on('connection', function(socket) {
@@ -43,29 +44,43 @@ io.on('connection', function(socket) {
     
     // The user wants to join a room.
     socket.on('joinRoom', function(uuid) {
-        var roomIndex = _.findIndex(rooms, { uuid: uuid });
-        if(roomIndex != -1) {
-            
-            socket.leave(socket.room);
-            removeUserFromRoom();
-            socket.room = uuid;
-            socket.join(socket.room);
-            console.log(socket.nick + ' joined ' + _.find(rooms, { uuid: socket.room}).name);
-            rooms[roomIndex].players.push(socket.id.substr(2));
-            
-            if(socket.room != 'home') {
-                io.sockets.to(socket.room).emit('userJoined', socket.nick);
-            } else if(rooms[roomIndex].isPublic) {
-                io.sockets.to('home').emit('playersInRoom', socket.room, rooms[roomIndex].players);
+        if(uuid != socket.room) {
+            var roomIndex = _.findIndex(rooms, { uuid: uuid });
+            if(roomIndex != -1) {
+
+                var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
+                socket.leave(socket.room);
+                removeUserFromRoom();
+                socket.room = uuid;
+                socket.join(socket.room);
+                console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + rooms[roomIndex].name);
+                rooms[roomIndex].players.push(socket.id.substr(2));
+
+                if(socket.room != 'home') {
+                    io.sockets.to(socket.room).emit('userJoined', socket.nick);
+                }
+                if(rooms[roomIndex].isPublic) {
+                    io.sockets.to('home').emit('playersInRoom', socket.room, rooms[roomIndex].players.length);
+                }
+                socket.emit('joinedRoom', rooms[roomIndex]);
+            } else {
+                socket.emit('goRoom', 'home');
             }
-            socket.emit('joinedRoom', rooms[roomIndex]);
-        } else {
-            socket.emit('noRoom');
         }
     });
 
     // The user wants to leave room if in one.
     socket.on('leaveRoom', function() {
+        var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
+        socket.leave(socket.room);
+        removeUserFromRoom();
+        socket.room = 'home';
+        socket.join(socket.room);
+        console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + _.find(rooms, { uuid: socket.room }).name);
+    });
+
+    // The user wants to leave room if in one.
+    socket.on('goRoom', function(uuid) {
         socket.leave(socket.room);
         removeUserFromRoom();
         socket.room = 'home';
@@ -80,16 +95,12 @@ io.on('connection', function(socket) {
                 uuid: uuid.v4(),
                 name: name,
                 isPublic: (isPublic ? true : false),
-                players: [socket.id.substr(2)],
+                players: [],
                 drinking: (drinking ? true : false),
                 turns: 0
             }
             rooms.push(room);
-            
-            socket.leave(socket.room);
-            socket.room = room.uuid;
-            socket.join(socket.room);
-            console.log(socket.nick + ' joined ' + _.find(rooms, { uuid: socket.room}).name);
+            console.log(socket.nick + ' created ' + room.name);
 
             if(room.isPublic) {
                 io.sockets.to('home').emit('newRoom', {
@@ -100,13 +111,13 @@ io.on('connection', function(socket) {
                     turns: room.turns
                 });
             }
-            socket.emit('joinedRoom', room);
+            socket.emit('goRoom', room.uuid);
         } else {
             socket.emit('roomAlreadyExists');
         } 
     });
 
-    // Tell what rooms that are public
+    // Tell what rooms that are public.
     socket.on('currentRooms', function() {
         var publicRooms = [];
         rooms.forEach(function(room) {
@@ -126,7 +137,7 @@ io.on('connection', function(socket) {
     // User wants new nick, checks if available.
     socket.on('setNick', function(nick) {
         var i = 1;
-        var old = socket.nick;
+        var oldNick = socket.nick;
         socket.nick = nick;
         while(_.findIndex(users, { nick: socket.nick }) != -1) {
             i *= 10;
@@ -134,9 +145,9 @@ io.on('connection', function(socket) {
         }
         _.find(users, { id: socket.id.substr(2) }).nick = socket.nick;
         socket.emit('newNick', socket.nick);
-        console.log(old + ' changed nick to ' + socket.nick);
+        console.log(oldNick + ' changed nick to ' + socket.nick);
         if(socket.room != 'home') {
-            socket.emit('changedNick', { old: old, new: socket.nick });            
+            socket.emit('changedNick', { old: oldNick, new: socket.nick });
         }
     });
 
@@ -148,26 +159,50 @@ io.on('connection', function(socket) {
     // The user disconnects.
     socket.on('disconnect', function () {
         users.splice(_.findIndex(users, { id: socket.id.substr(2) }), 1);
+        console.log(socket.nick + ' left ' + _.find(rooms, { uuid: socket.room }).name);
         removeUserFromRoom();
     });
 
-    // Function to remove user from room
+    // Function to remove user from room.
     function removeUserFromRoom() {
         if(socket.room != 'home') {
             io.sockets.to(socket.room).emit('userLeft', socket.nick);
             
             var roomIndex = _.findIndex(rooms, { uuid: socket.room});
             rooms[roomIndex].players.splice(rooms[roomIndex].players.indexOf(socket.id.substr(2)), 1);
-            console.log(socket.nick + ' left ' + rooms[roomIndex].name);
+            io.sockets.to('home').emit('playersInRoom', socket.room, rooms[roomIndex].players.length);
             
             if(rooms[roomIndex].players.length == 0) {
-                if(rooms[roomIndex].isPublic) {
-                    io.sockets.to('home').emit('removeRoom', socket.room);
-                }
-                console.log('Removed ' + rooms[roomIndex].name + ' because it was empty');
-                rooms.splice(roomIndex, 1);
+                emptyRooms.push({
+                    uuid: socket.room,
+                    added: (new Date()).getTime()
+                });
             }
         }
     }
 });
 
+// Remove empty rooms older than 1 minute.
+function cleanEmptyRooms() {
+    var pastTime = (new Date()).getTime() - 60000;
+    var currentEmptyRooms = emptyRooms;
+    emptyRooms = [];
+
+    currentEmptyRooms.forEach(function(room) {
+        var roomIndex = _.findIndex(rooms, { uuid: room.uuid});
+        if(rooms[roomIndex].players.length == 0) {
+            if(room.added < pastTime) {
+                if(rooms[roomIndex].isPublic) {
+                    io.sockets.to('home').emit('removeRoom', room.uuid);
+                }
+                console.log('Removed ' + rooms[roomIndex].name + ' because it was empty');
+                rooms.splice(roomIndex, 1);
+            } else {
+                emptyRooms.push(room);
+            }
+        }
+    });
+}
+
+// 1 minute interval for cleaning.
+var timer = setInterval(cleanEmptyRooms, 60000);

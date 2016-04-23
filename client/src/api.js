@@ -28,18 +28,22 @@ socket.on('newRoom', function(room) {
 
 // Emit remove room event to listener.
 socket.on('removeRoom', function(uuid) {
-    console.log(uuid);
     store.emit('removeRoom', uuid);
 });
 
 // User joined a room.
 socket.on('joinedRoom', function(room) {
-    console.log('joinedRoom', room);
+    store.emit('joinedRoom', room);
+});
+
+// Server wants user to go to room.
+socket.on('goRoom', function(uuid) {
+    store.emit('goRoom', uuid);
 });
 
 // User joined a room.
 socket.on('playersInRoom', function(uuid, numPlayers) {
-    console.log('playersInRoom', uuid, numPlayers);
+    store.emit('playersInRoom', uuid, numPlayers);
 });
 
 // Emit new nick event to listener.
@@ -76,6 +80,11 @@ store.joinRoom = (uuid) => {
 // Leave room on the server.
 store.leaveRoom = () => {
     socket.emit('leaveRoom');
+}
+
+// Ask for info for the room.
+store.goRoom = (uuid) => {
+    socket.emit('goRoom', uuid);
 }
 
 // Create room on the server.

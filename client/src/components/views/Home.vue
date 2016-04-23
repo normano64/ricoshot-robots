@@ -4,13 +4,13 @@
         <form @submit.prevent="createRoom">
             <input type="text" v-model="name" placeholder="Game name" autocomplete="off"/>
             <label :class="{'active': isPublic}">
-                <svg class="icon" v-if="isPublic"><use xlink:href="static/sprite.svg#icon-checkbox"/></svg>
-                <svg class="icon" v-if="!isPublic"><use xlink:href="static/sprite.svg#icon-checkbox-blank"/></svg>
+                <svg class="icon" v-if="isPublic"><use xlink:href="/static/sprite.svg#icon-checkbox"/></svg>
+                <svg class="icon" v-if="!isPublic"><use xlink:href="/static/sprite.svg#icon-checkbox-blank"/></svg>
                 <input type="checkbox" v-model="isPublic"/>Public game
             </label>
             <label :class="{'active': drinking}">
-                <svg class="icon" v-if="drinking"><use xlink:href="static/sprite.svg#icon-checkbox"/></svg>
-                <svg class="icon" v-if="!drinking"><use xlink:href="static/sprite.svg#icon-checkbox-blank"/></svg>
+                <svg class="icon" v-if="drinking"><use xlink:href="/static/sprite.svg#icon-checkbox"/></svg>
+                <svg class="icon" v-if="!drinking"><use xlink:href="/static/sprite.svg#icon-checkbox-blank"/></svg>
                 <input type="checkbox" v-model="drinking"/>Drinking mode
             </label>
             <input type="submit" value="Create game"/>
@@ -20,7 +20,7 @@
         <h2>Public games</h2>
         <label>
             <input type="text" name="query" v-model="searchQuery" placeholder="Room name" autocomplete="off"/>
-            <svg class="icon"><use xlink:href="static/sprite.svg#icon-search"/></svg>
+            <svg class="icon"><use xlink:href="/static/sprite.svg#icon-search"/></svg>
         </label>
         <ul>
             <li v-for="room in rooms | filterBy searchQuery in 'name'">
@@ -29,8 +29,8 @@
                         <span class="name">{{room.name}}</span>
                         <span>{{room.players}} {{room.players | plural 'player'}}, {{room.turns}} {{room.turns | plural 'turn'}} played</span>
                     </div>
-                    <svg class="icon" v-if="room.drinking"><use xlink:href="static/sprite.svg#icon-drink"/></svg>
-                    <svg class="icon"><use xlink:href="static/sprite.svg#icon-join"/></svg>
+                    <svg class="icon" v-if="room.drinking"><use xlink:href="/static/sprite.svg#icon-drink"/></svg>
+                    <svg class="icon"><use xlink:href="/static/sprite.svg#icon-join"/></svg>
                 </a>
             </li>
             <li class="error" v-if="!rooms.length">There's no public games right now</li>
@@ -70,40 +70,42 @@
      },
      methods: {
          newRoom(room) {
-             console.log(room);
              this.rooms.push(room);
          },
          removeRoom(uuid) {
-             var index = _.findIndex(this.rooms, { uuid: uuid });
-             if(index != -1) {
-                 this.rooms.splice(index, 1);
+             var roomIndex = _.findIndex(this.rooms, { uuid: uuid });
+             if(roomIndex != -1) {
+                 this.rooms.splice(roomIndex, 1);
              }
          },
          currentRooms(rooms) {
              this.rooms = rooms;
          },
          playersInRoom(uuid, numPlayers) {
-             rooms[_.findIndex(this.rooms, { uuid: uuid })].players = numPlayers;
+             this.rooms[_.findIndex(this.rooms, { uuid: uuid })].players = numPlayers;
          },
          createRoom() {
              api.createRoom(this.name, this.isPublic, this.drinking);
+         },
+         createdRoom() {
+             this.$router.go('/room/' + uuid);
          }
      },
-     attached () {
+     attached() {
          this.$dispatch('changeTitle');
-     },
-     created () {
          api.currentRooms();
          api.on('newRoom', this.newRoom);
          api.on('removeRoom', this.removeRoom);
          api.on('currentRooms', this.currentRooms);
          api.on('playersInRoom', this.playersInRoom);
+         api.on('createdRoom', this.createdRoom);
      },
-     destroyed () {
+     detached() {
          api.removeListener('newRoom', this.newRoom);
          api.removeListener('removeRoom', this.removeRoom);
          api.removeListener('currentRooms', this.currentRooms);
          api.removeListener('playersInRoom', this.playersInRoom);
+         api.removeListener('createdRoom', this.createdRoom);
      }
  }
 </script>
