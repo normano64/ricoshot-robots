@@ -24,6 +24,42 @@
 input {
     font-family:'Open Sans', sans-serif;
 }
+input[type=text] {
+    display:block;
+    font-size:1.1rem;
+    padding:0 12px;
+    line-height:36px;
+    margin:6px 0;
+    border:1px solid $gray-light;
+    color:$gray;
+    width:100%;
+}
+input[type=submit] {
+    display:block;
+    font-size:1.1rem;
+    padding:0 12px;
+    line-height:36px;
+    margin:6px 0;
+    border:0;
+    color:white;
+    background:$primary;
+    width:100%;
+    margin:6px 0;
+    cursor:pointer;
+}
+input[type=button] {
+    display:block;
+    font-size:1.1rem;
+    padding:0 12px;
+    line-height:36px;
+    margin:6px 0;
+    border:0;
+    color:white;
+    background:$primary;
+    width:100%;
+    margin:6px 0;
+    cursor:pointer;
+}
 svg.icon {
     vertical-align:bottom;
     display:inline-block;

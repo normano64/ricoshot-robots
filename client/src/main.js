@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import App from './App.vue';
-import HomeView from './components/views/Home.vue'
+import HomeView from './components/views/Home.vue';
+import RoomView from './components/views/Room.vue';
+import Api from './api.js';
 
 Vue.use(Router);
 
@@ -14,6 +16,9 @@ router.map({
     '/': {
         component: HomeView
     },
+    '/room/:uuid': {
+        component: RoomView
+    }
 });
 
 router.beforeEach(function () {
@@ -24,4 +29,4 @@ router.redirect({
     '*': '/'
 });
 
-router.start(App, '#app');
+router.start(App, 'body > div');
