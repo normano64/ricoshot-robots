@@ -25,21 +25,32 @@ var rooms = [{
 var users = [];
 var emptyRooms = [];
 
-// Handles socket.io connections.
-io.on('connection', function(socket) {
-    // Set default room and generate temp nick.
-    socket.room = 'home';
-    socket.join(socket.room);
-    socket.nick = 'Guest';
+io.use(function(socket, next){
+    var nick = decodeURIComponent(socket.handshake.query.nick);
+    if(nick && nick.length < 32) {
+        socket.nick = nick;
+    } else {
+        socket.nick = 'Guest';
+        nick = 'Guest';
+    }
     var i = 1;
     while(_.findIndex(users, { nick: socket.nick }) != -1) {
         i *= 10;
-        socket.nick = 'Guest' + Math.ceil(Math.random() * i);
+        socket.nick = nick + Math.ceil(Math.random() * i);
     }
     users.push({
         id: socket.id.substr(2),
         nick: socket.nick
     });
+    return next();
+});
+
+// Handles socket.io connections.
+io.on('connection', function(socket) {
+    // Set default room and generate temp nick.
+    socket.room = 'home';
+    socket.join(socket.room);
+    socket.emit('newNick', socket.nick);
     console.log(socket.nick + ' joined ' + _.find(rooms, { uuid: socket.room}).name);
     
     // The user wants to join a room.
@@ -136,18 +147,20 @@ io.on('connection', function(socket) {
 
     // User wants new nick, checks if available.
     socket.on('setNick', function(nick) {
-        var i = 1;
-        var oldNick = socket.nick;
-        socket.nick = nick;
-        while(_.findIndex(users, { nick: socket.nick }) != -1) {
-            i *= 10;
-            socket.nick = nick + Math.ceil(Math.random() * i);
-        }
-        _.find(users, { id: socket.id.substr(2) }).nick = socket.nick;
-        socket.emit('newNick', socket.nick);
-        console.log(oldNick + ' changed nick to ' + socket.nick);
-        if(socket.room != 'home') {
-            socket.emit('changedNick', { old: oldNick, new: socket.nick });
+        if(nick && nick.length < 32) {
+            var i = 1;
+            var oldNick = socket.nick;
+            socket.nick = nick;
+            while(_.findIndex(users, { nick: socket.nick }) != -1) {
+                i *= 10;
+                socket.nick = nick + Math.ceil(Math.random() * i);
+            }
+            _.find(users, { id: socket.id.substr(2) }).nick = socket.nick;
+            socket.emit('newNick', socket.nick);
+            console.log(oldNick + ' changed nick to ' + socket.nick);
+            if(socket.room != 'home') {
+                socket.emit('changedNick', { old: oldNick, new: socket.nick });
+            }
         }
     });
 

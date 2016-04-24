@@ -2,18 +2,12 @@ import io from 'socket.io-client';
 import { EventEmitter } from 'events';
 
 const store = new EventEmitter()
-const socket = io(':3000');
+const socket = io(':3000', { query: 'nick=' + getCookieValue('rsrnick')});
 
 export default store
 
 // When connection to the server is established.
 socket.on('connect', function() {
-    var nick = getCookieValue('rsrnick');
-    if(nick == '') {
-        socket.emit('getNick');
-    } else {
-        socket.emit('setNick', nick);
-    }
 });
 
 // Server was disconnected.
@@ -48,7 +42,7 @@ socket.on('playersInRoom', function(uuid, numPlayers) {
 
 // Emit new nick event to listener.
 socket.on('newNick', function(nick) {
-    document.cookie = 'rsrnick=' + nick;
+    document.cookie = 'rsrnick=' + encodeURIComponent(nick);
     store.emit('newNick', nick);
 });
 
