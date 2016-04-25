@@ -4,13 +4,15 @@
         <router-view></router-view>
     </div>
     <nick-modal-partial v-if="nickModal" transition="top"></nick-modal-partial>
-    <overlay-partial v-if="overlay" transition="opacity"></overlay-partial>
+    <error-modal-partial v-if="errorModal" transition="top" :message="errorMessage"></error-modal-partial>
+    <overlay-partial v-if="overlay" transition="opacity" :click-listener="overlayClickListener"></overlay-partial>
 </template>
 
 <script>
  import api from './api.js';
  import HeaderPartial from './components/partials/Header.vue';
  import NickModalPartial from './components/partials/NickModal.vue';
+ import ErrorModalPartial from './components/partials/ErrorModal.vue';
  import OverlayPartial from './components/partials/Overlay.vue';
  
  export default {
@@ -18,15 +20,31 @@
      components: {
          HeaderPartial,
          NickModalPartial,
+         ErrorModalPartial,
          OverlayPartial
      },
      data() {
          return {
              nickModal: false,
-             overlay: false
+             errorModal: false,
+             errorMessage: '',
+             overlay: false,
+             overlayClickListener: false
          }
      },
      events: {
+         showNickModal: 'showNickModal',
+         hideNickModal: 'hideNickModal',
+         hideOverlay: 'hideOverlay'
+     },
+     methods: {
+         goRoom(uuid) {
+             if(uuid != 'home') {
+                 this.$router.go('/room/' + uuid);
+             } else {
+                 this.$router.go('/');
+             }
+         },
          changeTitle(title) {
              if(title) {
                  document.title = 'Ricoshot Robots ' + title;
@@ -36,6 +54,7 @@
          },
          showNickModal() {
              this.nickModal = true;
+             this.overlayClickListener = true;
              this.overlay = true;
          },
          hideNickModal() {
@@ -44,23 +63,26 @@
          },
          hideOverlay() {
              this.nickModal = false;
+             this.errorModal = false;
              this.overlay = false;
-         }
-     },
-     methods: {
-         goRoom(uuid) {
-             if(uuid != 'home') {
-                 this.$router.go('/room/' + uuid);
-             } else {
-                 this.$router.go('/');
-             }
+         },
+         showErrorModal(message) {
+             this.nickModal = false;
+             this.errorModal = true;
+             this.errorMessage = message;
+             this.overlayClickListener = false;
+             this.overlay = true;
          }
      },
      created() {
          api.on('goRoom', this.goRoom);
+         api.on('connected', this.hideOverlay);
+         api.on('notConnected', this.showErrorModal);
      },
      destoryed() {
          api.removeListener('goRoom', this.goRoom);
+         api.removeListener('connected', this.hideOverlay);
+         api.removeListener('notConnected', this.showErrorModal);
          api.disconnect();
      }
  }

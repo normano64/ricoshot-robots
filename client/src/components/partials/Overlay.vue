@@ -1,10 +1,18 @@
 <template>
-    <div id="overlay" @click.prevent="$dispatch('hideOverlay')"></div>
+    <div id="overlay" @click.prevent="hideOverlay"></div>
 </template>
 
 <script>
  export default {
-     name: 'overlayPartial'
+     name: 'overlayPartial',
+     props: ['clickListener'],
+     methods: {
+         hideOverlay() {
+             if(this.clickListener) {
+                 this.$dispatch('hideOverlay');
+             }
+         }
+     }
  }
 </script>
 

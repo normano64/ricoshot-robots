@@ -8,6 +8,11 @@ export default store
 
 // When connection to the server is established.
 socket.on('connect', function() {
+    store.emit('connected');
+});
+
+socket.on('connect_error', function() {
+    store.emit('notConnected', 'The server is offline');
 });
 
 // Server was disconnected.
