@@ -169,6 +169,41 @@ io.on('connection', function(socket) {
         socket.emit('newNick', socket.nick);
     });
 
+    // Broadcast chat message to all users in the same room.
+    socket.on('chatMessage', function(message) {
+        if(socket.room != 'home') {
+            io.sockets.to(socket.room).emit('chatMessage', socket.nick, message, (new Date()).getTime());
+        }
+    });
+
+
+    // User asks to join a room.
+    socket.on('joinRoom', function(uuid) {
+        if(uuid != socket.room) {
+            var roomIndex = _.findIndex(rooms, { uuid: uuid });
+            if(roomIndex != -1) {
+
+                var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
+                socket.leave(socket.room);
+                removeUserFromRoom();
+                socket.room = uuid;
+                socket.join(socket.room);
+                console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + rooms[roomIndex].name);
+                rooms[roomIndex].players.push(socket.id.substr(2));
+
+                if(socket.room != 'home') {
+                    io.sockets.to(socket.room).emit('userJoined', socket.nick);
+                }
+                if(rooms[roomIndex].isPublic) {
+                    io.sockets.to('home').emit('playersInRoom', socket.room, rooms[roomIndex].players.length);
+                }
+                socket.emit('joinedRoom', rooms[roomIndex]);
+            } else {
+                socket.emit('goRoom', 'home');
+            }
+        }
+    });
+
     // The user disconnects.
     socket.on('disconnect', function () {
         users.splice(_.findIndex(users, { id: socket.id.substr(2) }), 1);

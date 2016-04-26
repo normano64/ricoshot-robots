@@ -1,13 +1,18 @@
 <template>
-    <div></div>
+    <div>
+        <chat-partial></chat-partial>
+    </div>
 </template>
 
 <script>
- import _ from 'lodash';
  import api from '../../api.js';
+ import ChatPartial from '../partials/Chat.vue';
 
  export default {
      name: 'RoomView',
+     components: {
+         ChatPartial
+     },
      methods: {
          joinedRoom(room){
              this.$dispatch('changeTitle', 'in ' + room.name);

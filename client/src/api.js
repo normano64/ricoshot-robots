@@ -49,11 +49,17 @@ socket.on('playersInRoom', function(uuid, numPlayers) {
 socket.on('newNick', function(nick) {
     document.cookie = 'rsrnick=' + encodeURIComponent(nick);
     store.emit('newNick', nick);
+    store.nick = nick;
 });
 
 // Event with current existing rooms.
 socket.on('currentRooms', function(rooms) {
     store.emit('currentRooms', rooms);
+});
+
+// Event for received chat message.
+socket.on('chatMessage', function(nick, message, time) {
+    store.emit('chatMessage', nick, message, time, (store.nick == nick ? true : false));
 });
 
 // Disconnect from server.
@@ -91,6 +97,10 @@ store.createRoom = (name, isPublic, drinking) => {
     socket.emit('createRoom', name, isPublic, drinking);
 }
 
+// Send chat message.
+store.sendMessage = (message) => {
+    socket.emit('chatMessage', message);
+}
 
 // From http://stackoverflow.com/a/25490531
 function getCookieValue(name) {
