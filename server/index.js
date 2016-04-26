@@ -220,7 +220,7 @@ io.on('connection', function(socket) {
             rooms[roomIndex].players.splice(rooms[roomIndex].players.indexOf(socket.id.substr(2)), 1);
             io.sockets.to('home').emit('playersInRoom', socket.room, rooms[roomIndex].players.length);
             
-            if(rooms[roomIndex].players.length == 0) {
+            if(rooms[roomIndex].players.length == 0 && _.findIndex(emptyRooms, { uuid: socket.room }) == -1) {
                 emptyRooms.push({
                     uuid: socket.room,
                     added: (new Date()).getTime()

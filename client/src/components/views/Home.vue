@@ -19,7 +19,7 @@
     <div id="roomlist">
         <h2>Public games</h2>
         <label>
-            <input type="text" name="query" v-model="searchQuery" placeholder="Room name" autocomplete="off"/>
+            <input type="text" v-model="searchQuery" placeholder="Room name" autocomplete="off"/>
             <svg class="icon"><use xlink:href="/static/sprite.svg#icon-search"/></svg>
         </label>
         <ul>
@@ -33,7 +33,7 @@
                     <svg class="icon"><use xlink:href="/static/sprite.svg#icon-join"/></svg>
                 </a>
             </li>
-            <li class="error" v-if="!rooms.length">There's no public games right now</li>
+            <li class="error" v-if="!rooms.length && !searchQuery">There's no public games right now</li>
             <li class="error" v-if="!filteredRooms.length && searchQuery">No games found</li>
         </ul>
     </div>
@@ -45,7 +45,7 @@
 
  export default {
      name: 'HomeView',
-     data () {
+     data() {
          return {
              isPublic: false,
              drinking: false,
@@ -64,7 +64,7 @@
          }
      },
      computed: {
-         filteredRooms: function () {
+         filteredRooms: function() {
              return this.$options.filters.filterBy(this.rooms, this.searchQuery);
          }
      },
