@@ -56,6 +56,7 @@
          border-radius:16px;
          padding:0 12px;
          z-index:97;
+         color:white;
      }
      &:hover {
          .full {
