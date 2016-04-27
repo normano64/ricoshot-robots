@@ -21,6 +21,7 @@ var rooms = [{
     players: [],
     drinking: false,
     turns: 0,
+    chatHistory: []
 }];
 var users = [];
 var emptyRooms = [];
@@ -108,7 +109,8 @@ io.on('connection', function(socket) {
                 isPublic: (isPublic ? true : false),
                 players: [],
                 drinking: (drinking ? true : false),
-                turns: 0
+                turns: 0,
+                chatHistory: []
             }
             rooms.push(room);
             console.log(socket.nick + ' created ' + room.name);
@@ -172,10 +174,11 @@ io.on('connection', function(socket) {
     // Broadcast chat message to all users in the same room.
     socket.on('chatMessage', function(message) {
         if(socket.room != 'home') {
-            io.sockets.to(socket.room).emit('chatMessage', socket.nick, message, (new Date()).getTime());
+            var time = (new Date()).getTime();
+            io.sockets.to(socket.room).emit('chatMessage', socket.nick, message, time, true);
+            saveToChatHistory(message, time, true);
         }
     });
-
 
     // User asks to join a room.
     socket.on('joinRoom', function(uuid) {
@@ -227,6 +230,20 @@ io.on('connection', function(socket) {
                 });
             }
         }
+    }
+
+    // Save chat message to the rooms chat log.
+    function saveToChatHistory(message, time, player) {
+        var roomIndex = _.findIndex(rooms, { uuid: socket.room });
+        if(rooms[roomIndex].chatHistory.length >= 20) {
+            rooms[roomIndex].chatHistory.splice(0, 1);
+        }
+        rooms[roomIndex].chatHistory.push({
+            nick: socket.nick,
+            message: message,
+            time: time,
+            player: player
+        });
     }
 });
 

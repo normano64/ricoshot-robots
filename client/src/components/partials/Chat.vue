@@ -3,15 +3,15 @@
         <h2>Chat</h2>
         <div v-el:chat class="content">
             <ul>
-                <li v-for="message in messages" :class="{ 'self': message.self }">
-                    <avatar-partial :nick="message.nick" :full="true" v-if="!message.self"></avatar-partial>
-                    <div class="message">{{ message.text }}<span>{{ message.time | time }}</span></div>
+                <li v-for="message in messages" :class="{ 'self': isSelf(message.nick) }">
+                    <avatar-partial :nick="message.nick" :full="true" v-if="!isSelf(message.nick)"></avatar-partial>
+                    <div class="message">{{ message.message }}<span>{{ message.time | time }}</span></div>
                 </li>
             </ul>
         </div>
         <label>
             <input type="text" v-model="chatInput" autocomplete="off" @keyup.enter="sendMessage"/>
-            <svg class="icon"><use xlink:href="/static/sprite.svg#icon-chat" @click="sendMessage"/></svg>
+            <svg class="icon" @click="sendMessage"><use xlink:href="/static/sprite.svg#icon-chat"/></svg>
         </label>
     </div>
 </template>
@@ -47,8 +47,9 @@
              }
              this.messages.push({
                  nick: nick,
-                 text: message,
+                 message: message,
                  time: time,
+                 player: true,
                  self: self
              });
          },
@@ -57,6 +58,9 @@
                  api.sendMessage(this.chatInput);
                  this.chatInput = '';
              }
+         },
+         isSelf(nick) {
+             return (nick == api.nick)
          }
      },
      attached() {

@@ -33,6 +33,12 @@ socket.on('removeRoom', function(uuid) {
 // User joined a room.
 socket.on('joinedRoom', function(room) {
     store.emit('joinedRoom', room);
+    /* Send out old chat message instead of passing them in the view
+     * to make it scroll to bottom.
+     */
+    room.chatHistory.forEach(function(message) {
+        store.emit('chatMessage', message.nick, message.message, message.time, message.player);
+    });
 });
 
 // Server wants user to go to room.
@@ -58,8 +64,8 @@ socket.on('currentRooms', function(rooms) {
 });
 
 // Event for received chat message.
-socket.on('chatMessage', function(nick, message, time) {
-    store.emit('chatMessage', nick, message, time, (store.nick == nick ? true : false));
+socket.on('chatMessage', function(nick, message, time, player) {
+    store.emit('chatMessage', nick, message, time, player);
 });
 
 // Disconnect from server.
