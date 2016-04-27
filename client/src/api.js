@@ -68,6 +68,21 @@ socket.on('chatMessage', function(nick, message, time, player) {
     store.emit('chatMessage', nick, message, time, player);
 });
 
+// Some user changed nick.
+socket.on('changedNick', function(oldNick, newNick, time) {
+    store.emit('chatMessage', '', oldNick + ' changed nick to ' + newNick, time, false);
+});
+
+// Some user joined the room.
+socket.on('userJoined', function(nick, time) {
+    store.emit('chatMessage', '', nick + ' joined the room', time, false);
+});
+
+// Some user left the room.
+socket.on('userLeft', function(nick, time) {
+    store.emit('chatMessage', '', nick + ' left the room', time, false);
+});
+
 // Disconnect from server.
 store.disconnect = () => {
     socket.disconnect();

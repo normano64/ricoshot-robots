@@ -3,8 +3,8 @@
         <h2>Chat</h2>
         <div v-el:chat class="content">
             <ul>
-                <li v-for="message in messages" :class="{ 'self': isSelf(message.nick) }">
-                    <avatar-partial :nick="message.nick" :full="true" v-if="!isSelf(message.nick)"></avatar-partial>
+                <li v-for="message in messages" :class="{ 'self': isSelf(message.nick), 'server': !message.player }">
+                    <avatar-partial :nick="message.nick" :full="true" v-if="!isSelf(message.nick) && message.player"></avatar-partial>
                     <div class="message">{{ message.message }}<span>{{ message.time | time }}</span></div>
                 </li>
             </ul>
@@ -38,7 +38,7 @@
          }
      },
      methods: {
-         chatMessage(nick, message, time, self) {
+         chatMessage(nick, message, time, player) {
              if(this.$els.chat.scrollHeight - this.$els.chat.scrollTop <= this.$els.chat.offsetHeight) {
                  var _this = this;
                  setTimeout(function() {
@@ -49,8 +49,7 @@
                  nick: nick,
                  message: message,
                  time: time,
-                 player: true,
-                 self: self
+                 player: player
              });
          },
          sendMessage() {
@@ -141,6 +140,20 @@
                          left:initial;
                          right:2px;
                          text-align:right;
+                     }
+                 }
+             }
+             &.server {
+                 line-height:10px;
+                 .message {
+                     padding:0;
+                     background:none;
+                     text-align:center;
+                     width:100%;
+                     max-width:100%;
+                     font-size:.75em;
+                     span {
+                         font-size:.87em;
                      }
                  }
              }

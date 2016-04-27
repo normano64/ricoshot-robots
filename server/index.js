@@ -68,13 +68,16 @@ io.on('connection', function(socket) {
                 console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + rooms[roomIndex].name);
                 rooms[roomIndex].players.push(socket.id.substr(2));
 
+                socket.emit('joinedRoom', rooms[roomIndex]);
+
                 if(socket.room != 'home') {
-                    io.sockets.to(socket.room).emit('userJoined', socket.nick);
+                    var time = (new Date()).getTime();
+                    io.sockets.to(socket.room).emit('userJoined', socket.nick, time);
+                    saveToChatHistory(socket.nick + ' joined the room', time, false);
                 }
                 if(rooms[roomIndex].isPublic) {
                     io.sockets.to('home').emit('playersInRoom', socket.room, rooms[roomIndex].players.length);
                 }
-                socket.emit('joinedRoom', rooms[roomIndex]);
             } else {
                 socket.emit('goRoom', 'home');
             }
@@ -85,6 +88,9 @@ io.on('connection', function(socket) {
     socket.on('leaveRoom', function() {
         var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
         socket.leave(socket.room);
+        var time = (new Date()).getTime();
+        io.sockets.to(socket.room).emit('userLeft', socket.nick, time);
+        saveToChatHistory(socket.nick + ' left the room', time, false);
         removeUserFromRoom();
         socket.room = 'home';
         socket.join(socket.room);
@@ -161,7 +167,9 @@ io.on('connection', function(socket) {
             socket.emit('newNick', socket.nick);
             console.log(oldNick + ' changed nick to ' + socket.nick);
             if(socket.room != 'home') {
-                socket.emit('changedNick', { old: oldNick, new: socket.nick });
+                var time = (new Date()).getTime();
+                io.sockets.to(socket.room).emit('changedNick', oldNick, socket.nick, time);
+                saveToChatHistory(oldNick + ' changed nick to ' + socket.nick, time, false);
             }
         }
     });
@@ -177,33 +185,6 @@ io.on('connection', function(socket) {
             var time = (new Date()).getTime();
             io.sockets.to(socket.room).emit('chatMessage', socket.nick, message, time, true);
             saveToChatHistory(message, time, true);
-        }
-    });
-
-    // User asks to join a room.
-    socket.on('joinRoom', function(uuid) {
-        if(uuid != socket.room) {
-            var roomIndex = _.findIndex(rooms, { uuid: uuid });
-            if(roomIndex != -1) {
-
-                var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
-                socket.leave(socket.room);
-                removeUserFromRoom();
-                socket.room = uuid;
-                socket.join(socket.room);
-                console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + rooms[roomIndex].name);
-                rooms[roomIndex].players.push(socket.id.substr(2));
-
-                if(socket.room != 'home') {
-                    io.sockets.to(socket.room).emit('userJoined', socket.nick);
-                }
-                if(rooms[roomIndex].isPublic) {
-                    io.sockets.to('home').emit('playersInRoom', socket.room, rooms[roomIndex].players.length);
-                }
-                socket.emit('joinedRoom', rooms[roomIndex]);
-            } else {
-                socket.emit('goRoom', 'home');
-            }
         }
     });
 
@@ -239,7 +220,7 @@ io.on('connection', function(socket) {
             rooms[roomIndex].chatHistory.splice(0, 1);
         }
         rooms[roomIndex].chatHistory.push({
-            nick: socket.nick,
+            nick: (player ? socket.nick : ''),
             message: message,
             time: time,
             player: player
