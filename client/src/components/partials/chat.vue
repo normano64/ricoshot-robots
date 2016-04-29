@@ -3,10 +3,7 @@
         <h2>Chat</h2>
         <div v-el:chat class="content">
             <ul>
-                <li v-for="message in messages" :class="{ 'self': isSelf(message.nick), 'server': !message.player }">
-                    <avatar-partial :nick="message.nick" :full="true" v-if="!isSelf(message.nick) && message.player"></avatar-partial>
-                    <div class="message">{{ message.message }}<span>{{ message.time | time }}</span></div>
-                </li>
+                <chat-message-partial v-for="message in messages" :message="message"></chat-message-partial>
             </ul>
         </div>
         <label>
@@ -17,56 +14,41 @@
 </template>
 
 <script>
- import api from '../../api.js';
- import AvatarPartial from './Avatar.vue';
+ import store from '../../store';
+ import chatMessagePartial from './chatMessage.vue';
 
  export default {
      name: 'chatPartial',
+     props: ['messages'],
      data() {
          return {
              chatInput: '',
-             messages: []
+             scrollHeight: null
          }
      },
      components: {
-         AvatarPartial
+         chatMessagePartial
      },
-     filters: {
-         time(text) {
-             var time = new Date(text);
-             return time.getHours() + ':' + ('0' + time.getMinutes()).substr(-2);
+     events: {
+         scroll() {
+             if(this.scrollHeight - this.$els.chat.scrollTop <= this.$els.chat.offsetHeight) {
+                 this.$nextTick(() => {
+                     this.$els.chat.scrollTop = this.$els.chat.scrollHeight;
+                 });
+             }
+             this.scrollHeight = this.$els.chat.scrollHeight
          }
      },
      methods: {
-         chatMessage(nick, message, time, player) {
-             if(this.$els.chat.scrollHeight - this.$els.chat.scrollTop <= this.$els.chat.offsetHeight) {
-                 var _this = this;
-                 setTimeout(function() {
-                     _this.$els.chat.scrollTop = _this.$els.chat.scrollHeight;
-                 }, 0);
-             }
-             this.messages.push({
-                 nick: nick,
-                 message: message,
-                 time: time,
-                 player: player
-             });
-         },
          sendMessage() {
              if(this.chatInput) {
-                 api.sendMessage(this.chatInput);
+                 store.emit('chat_message', this.chatInput);
                  this.chatInput = '';
              }
-         },
-         isSelf(nick) {
-             return (nick == api.nick)
          }
      },
      attached() {
-         api.on('chatMessage', this.chatMessage);
-     },
-     detached() {
-         api.removeListener('chatMessage', this.chatMessage);
+         this.scrollHeight = this.$els.chat.scrollHeight;
      }
  }
 </script>

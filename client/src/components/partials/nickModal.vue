@@ -10,28 +10,28 @@
 </template>
 
 <script>
- import api from '../../api.js';
+ import store from '../../store';
  
  export default {
-     name: 'NickModalPartial',
+     name: 'nickModalPartial',
      data() {
          return {
-             nick: ''
+             nick: null
          }
      },
      methods: {
          changeNick() {
-             api.setNick(this.nick);
+             store.emit('set_nick', this.nick);
          },
          newNick(nick) {
              this.$dispatch('hideNickModal');
          }
      },
      created() {
-         api.on('newNick', this.newNick);
+         store.on('new_nick', this.newNick);
      },
      destroyed () {
-         api.removeListener('newNick', this.newNick);
+         store.removeListener('new_nick', this.newNick);
      },
      attached() {
          this.$els.nick.focus();

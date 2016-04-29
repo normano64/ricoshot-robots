@@ -1,5 +1,5 @@
 <template>
-    <div class="avatar" :style="{ 'background-color': color, 'color': textColor }">
+    <div class="avatar" :style="{ 'background-color': color, 'color': textColor(color) }">
         <span>{{ nick | first | capitalize }}</span>
         <span class="full" v-if="full">{{ nick }}</span>
     </div>
@@ -7,19 +7,21 @@
 
 <script>
  export default {
-     name: 'AvatarPartial',
+     name: 'avatarPartial',
      props: ['nick', 'full'],
+     data() {
+         return {
+             color: this.$options.filters.textToColor(this.nick)
+         }
+     },
      filters: {
          first(text) {
              return text.substr(0, 1);
          }
      },
-     computed: {
-         color() {
-             return this.$options.filters.textToColor(this.nick);
-         },
-         textColor() {
-             var lightness = this.$options.filters.colorLightness(this.color);
+     methods: {
+         textColor(color) {
+             var lightness = this.$options.filters.colorLightness(color);
              if(lightness >= 0.5) {
                  return '#000000';
              } else {

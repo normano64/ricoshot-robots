@@ -41,7 +41,7 @@
 
 <script>
  import _ from 'lodash';
- import api from '../../api.js';
+ import store from '../../store';
 
  export default {
      name: 'HomeView',
@@ -72,7 +72,7 @@
          newRoom(room) {
              this.rooms.push(room);
          },
-         removeRoom(uuid) {
+         removedRoom(uuid) {
              var roomIndex = _.findIndex(this.rooms, { uuid: uuid });
              if(roomIndex != -1) {
                  this.rooms.splice(roomIndex, 1);
@@ -85,7 +85,7 @@
              this.rooms[_.findIndex(this.rooms, { uuid: uuid })].players = numPlayers;
          },
          createRoom() {
-             api.createRoom(this.name, this.isPublic, this.drinking);
+             store.emit('create_room', this.name, this.isPublic, this.drinking);
          },
          createdRoom() {
              this.$router.go('/room/' + uuid);
@@ -93,19 +93,17 @@
      },
      attached() {
          this.$dispatch('changeTitle');
-         api.currentRooms();
-         api.on('newRoom', this.newRoom);
-         api.on('removeRoom', this.removeRoom);
-         api.on('currentRooms', this.currentRooms);
-         api.on('playersInRoom', this.playersInRoom);
-         api.on('createdRoom', this.createdRoom);
+         store.emit('current_rooms');
+         store.on('new_room', this.newRoom);
+         store.on('removed_room', this.removedRoom);
+         store.on('current_rooms', this.currentRooms);
+         store.on('players_in_room', this.playersInRoom);
      },
      detached() {
-         api.removeListener('newRoom', this.newRoom);
-         api.removeListener('removeRoom', this.removeRoom);
-         api.removeListener('currentRooms', this.currentRooms);
-         api.removeListener('playersInRoom', this.playersInRoom);
-         api.removeListener('createdRoom', this.createdRoom);
+         store.removeListener('new_room', this.newRoom);
+         store.removeListener('removed_room', this.removedRoom);
+         store.removeListener('current_rooms', this.currentRooms);
+         store.removeListener('players_in_room', this.playersInRoom);
      }
  }
 </script>

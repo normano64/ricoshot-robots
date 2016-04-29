@@ -1,10 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import App from './App.vue';
 import { textToColor, colorLightness } from './filters'
-import HomeView from './components/views/Home.vue';
-import RoomView from './components/views/Room.vue';
-import Api from './api.js';
+import app from './components/app.vue';
+import homeView from './components/views/Home.vue';
+import roomView from './components/views/Room.vue';
 
 Vue.filter('textToColor', textToColor)
 Vue.filter('colorLightness', colorLightness)
@@ -18,10 +17,10 @@ var router = new Router({
 
 router.map({
     '/': {
-        component: HomeView
+        component: homeView
     },
     '/room/:uuid': {
-        component: RoomView
+        component: roomView
     }
 });
 
@@ -33,4 +32,4 @@ router.redirect({
     '*': '/'
 });
 
-router.start(App, 'body > div');
+router.start(app, 'body > div');

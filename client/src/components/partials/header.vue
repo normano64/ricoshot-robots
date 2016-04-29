@@ -10,13 +10,13 @@
 </template>
 
 <script>
- import api from '../../api.js';
+ import store from '../../store';
 
  export default {
-     name: 'HeaderPartial',
+     name: 'headerPartial',
      data() {
          return {
-             nick: ''
+             nick: store.nick
          }
      },
      methods: {
@@ -25,10 +25,10 @@
          }
      },
      created() {
-         api.on('newNick', this.newNick);
+         store.on('new_nick', this.newNick);
      },
      destroyed () {
-         api.removeListener('newNick', this.newNick);
+         store.removeListener('new_nick', this.newNick);
      }
  }
 </script>

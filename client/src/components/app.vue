@@ -1,27 +1,29 @@
 <template>
-    <header-partial></header-partial>
-    <div id="main">
-        <router-view></router-view>
+    <div>
+        <header-partial></header-partial>
+        <div id="main">
+            <router-view></router-view>
+        </div>
+        <nick-modal-partial class="modal" v-if="nickModal" transition="top"></nick-modal-partial>
+        <error-modal-partial class="modal" v-if="errorModal" transition="top" :message="errorMessage"></error-modal-partial>
+        <overlay-partial v-if="overlay" transition="opacity" :click-listener="overlayClickListener"></overlay-partial>
     </div>
-    <nick-modal-partial class="modal" v-if="nickModal" transition="top"></nick-modal-partial>
-    <error-modal-partial class="modal" v-if="errorModal" transition="top" :message="errorMessage"></error-modal-partial>
-    <overlay-partial v-if="overlay" transition="opacity" :click-listener="overlayClickListener"></overlay-partial>
 </template>
 
 <script>
- import api from './api.js';
- import HeaderPartial from './components/partials/Header.vue';
- import NickModalPartial from './components/partials/NickModal.vue';
- import ErrorModalPartial from './components/partials/ErrorModal.vue';
- import OverlayPartial from './components/partials/Overlay.vue';
+ import store from '../store';
+ import headerPartial from './partials/header.vue';
+ import nickModalPartial from './partials/nickModal.vue';
+ import errorModalPartial from './partials/errorModal.vue';
+ import overlayPartial from './partials/overlay.vue';
  
  export default {
-     name: 'App',
+     name: 'app',
      components: {
-         HeaderPartial,
-         NickModalPartial,
-         ErrorModalPartial,
-         OverlayPartial
+         headerPartial,
+         nickModalPartial,
+         errorModalPartial,
+         overlayPartial
      },
      data() {
          return {
@@ -66,24 +68,29 @@
              this.errorModal = false;
              this.overlay = false;
          },
-         showErrorModal(message) {
+         showErrorModal(error) {
              this.nickModal = false;
              this.errorModal = true;
-             this.errorMessage = message;
+             this.errorMessage = 'The server is offline';
              this.overlayClickListener = false;
              this.overlay = true;
+         },
+         reconnected() {
+             // TBI: Handle reconnection
          }
      },
      created() {
-         api.on('goRoom', this.goRoom);
-         api.on('connected', this.hideOverlay);
-         api.on('notConnected', this.showErrorModal);
+         store.on('go_to_room', this.goRoom);
+         store.on('connect', this.hideOverlay);
+         store.on('connect_error', this.showErrorModal);
+         store.on('reconnect', this.reconnected);
      },
      destoryed() {
-         api.removeListener('goRoom', this.goRoom);
-         api.removeListener('connected', this.hideOverlay);
-         api.removeListener('notConnected', this.showErrorModal);
-         api.disconnect();
+         store.removeListener('go_to_room', this.goRoom);
+         store.removeListener('connect', this.hideOverlay);
+         store.removeListener('connect_error', this.showErrorModal);
+         store.removeListener('reconnect', this.reconnected);
+         store.disconnect();
      }
  }
 </script>

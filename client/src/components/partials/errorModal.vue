@@ -6,7 +6,7 @@
 
 <script>
  export default {
-     name: 'ErrorModalPartial',
+     name: 'errorModalPartial',
      props: ['message']
  }
 </script>
