@@ -55,8 +55,10 @@
                  time: time,
                  isPlayer: false
              });
+         },
+         reconnected() {
+             store.emit('join_room', this.$route.params.uuid);
          }
-         
      },
      attached() {
          store.emit('join_room', this.$route.params.uuid);
@@ -65,6 +67,7 @@
          store.on('player_joined', this.playerJoined);
          store.on('player_left', this.playerLeft);
          store.on('player_changed_nick', this.playerChangedNick);
+         store.on('reconnect', this.reconnected);
      },
      detached() {
          store.removeListener('joined_room', this.joinedRoom);
@@ -72,6 +75,7 @@
          store.removeListener('player_joined', this.playerJoined);
          store.removeListener('player_left', this.playerLeft);
          store.removeListener('player_changed_nick', this.playerChangedNick);
+         store.removeListener('reconnect', this.reconnected);
          store.emit('leave_room');
      }
  }

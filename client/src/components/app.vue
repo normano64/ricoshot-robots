@@ -74,22 +74,17 @@
              this.errorMessage = 'The server is offline';
              this.overlayClickListener = false;
              this.overlay = true;
-         },
-         reconnected() {
-             // TBI: Handle reconnection
          }
      },
      created() {
          store.on('go_to_room', this.goToRoom);
          store.on('connect', this.hideOverlay);
          store.on('connect_error', this.showErrorModal);
-         store.on('reconnect', this.reconnected);
      },
      destoryed() {
          store.removeListener('go_to_room', this.goToRoom);
          store.removeListener('connect', this.hideOverlay);
          store.removeListener('connect_error', this.showErrorModal);
-         store.removeListener('reconnect', this.reconnected);
          store.disconnect();
      }
  }
