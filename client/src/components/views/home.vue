@@ -86,6 +86,9 @@
          },
          createRoom() {
              store.emit('create_room', this.name, this.isPublic, this.drinking);
+         },
+         reconnected() {
+             store.emit('current_rooms');
          }
      },
      attached() {
@@ -95,12 +98,14 @@
          store.on('removed_room', this.removedRoom);
          store.on('current_rooms', this.currentRooms);
          store.on('players_in_room', this.playersInRoom);
+         store.on('reconnect', this.reconnected);
      },
      detached() {
          store.removeListener('new_room', this.newRoom);
          store.removeListener('removed_room', this.removedRoom);
          store.removeListener('current_rooms', this.currentRooms);
          store.removeListener('players_in_room', this.playersInRoom);
+         store.removeListener('reconnect', this.reconnected);
      }
  }
 </script>
