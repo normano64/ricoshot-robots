@@ -2,8 +2,8 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import { textToColor, colorLightness } from './filters'
 import app from './components/app.vue';
-import homeView from './components/views/Home.vue';
-import roomView from './components/views/Room.vue';
+import homeView from './components/views/home.vue';
+import roomView from './components/views/room.vue';
 
 Vue.filter('textToColor', textToColor)
 Vue.filter('colorLightness', colorLightness)
