@@ -86,9 +86,6 @@
          },
          createRoom() {
              store.emit('create_room', this.name, this.isPublic, this.drinking);
-         },
-         createdRoom() {
-             this.$router.go('/room/' + uuid);
          }
      },
      attached() {

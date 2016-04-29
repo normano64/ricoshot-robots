@@ -14,7 +14,7 @@ server.listen(port, function () {
     console.log('Server listening at port %d', port);
 });
 
-// Home room should always exist.
+/* The Home room should always exist. */
 var rooms = [{
     uuid: 'home',
     name: 'Home',
@@ -37,7 +37,7 @@ io.use(function(socket, next) {
 
 // Handles socket.io connections.
 io.on('connection', function(socket) {
-    // Set default room and generate temp nick.
+    /* Set the room to home to prevent the user for entering limbo. */
     socket.room = 'home';
     socket.join(socket.room);
     if(socket.nick) {
@@ -94,15 +94,14 @@ io.on('connection', function(socket) {
 
     // The user wants to leave room if in one.
     socket.on('leave_room', function() {
-        var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
-        socket.leave(socket.room);
-        var time = (new Date()).getTime();
-        io.to(socket.room).emit('player_left', socket.nick, time);
-        saveToChatHistory(socket.nick + ' left the room', time, false);
-        removeUserFromRoom();
-        socket.room = 'home';
-        socket.join(socket.room);
-        console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + _.find(rooms, { uuid: socket.room }).name);
+        if(socket.room != 'home') {
+            var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
+            socket.leave(socket.room);
+            removeUserFromRoom();
+            socket.room = 'home';
+            socket.join(socket.room);
+            console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + _.find(rooms, { uuid: socket.room }).name);
+        }
     });
 
     // The user wants to join a room, leaves the old room if any.
@@ -212,21 +211,21 @@ io.on('connection', function(socket) {
     }
 
     // Save chat message to the rooms chat log.
-    function saveToChatHistory(message, time, player) {
+    function saveToChatHistory(message, time, isPlayer) {
         var roomIndex = _.findIndex(rooms, { uuid: socket.room });
         if(rooms[roomIndex].chatHistory.length >= 20) {
             rooms[roomIndex].chatHistory.splice(0, 1);
         }
         rooms[roomIndex].chatHistory.push({
-            nick: (player ? socket.nick : ''),
+            nick: (isPlayer ? socket.nick : null),
             message: message,
             time: time,
-            isPlayer: player
+            isPlayer: isPlayer
         });
     }
 });
 
-// Remove empty rooms older than 1 minute.
+/* Remove rooms thats been empty for at least 1 minute. */
 function cleanEmptyRooms() {
     var pastTime = (new Date()).getTime() - 60000;
     var currentEmptyRooms = emptyRooms;
@@ -248,5 +247,5 @@ function cleanEmptyRooms() {
     });
 }
 
-// 1 minute interval for cleaning.
+/* Run the room clean up at 1 minute interval. */
 var timer = setInterval(cleanEmptyRooms, 60000);

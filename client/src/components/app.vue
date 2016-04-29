@@ -40,7 +40,7 @@
          hideOverlay: 'hideOverlay'
      },
      methods: {
-         goRoom(uuid) {
+         goToRoom(uuid) {
              if(uuid != 'home') {
                  this.$router.go('/room/' + uuid);
              } else {
@@ -80,13 +80,13 @@
          }
      },
      created() {
-         store.on('go_to_room', this.goRoom);
+         store.on('go_to_room', this.goToRoom);
          store.on('connect', this.hideOverlay);
          store.on('connect_error', this.showErrorModal);
          store.on('reconnect', this.reconnected);
      },
      destoryed() {
-         store.removeListener('go_to_room', this.goRoom);
+         store.removeListener('go_to_room', this.goToRoom);
          store.removeListener('connect', this.hideOverlay);
          store.removeListener('connect_error', this.showErrorModal);
          store.removeListener('reconnect', this.reconnected);
