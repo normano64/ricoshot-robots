@@ -1,5 +1,5 @@
 var express = require('express');
-var cookie = require('cookie');
+var cookieParser = require('cookie');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
@@ -28,9 +28,10 @@ var users = [];
 var emptyRooms = [];
 
 io.use(function(socket, next) {
-    var nick = cookie.parse(socket.request.headers.cookie).rsrnick;
-    if(nick) {
-        socket.nick = decodeURIComponent(nick);
+    var cookie = cookieParser.parse(socket.request.headers.cookie);
+    var nick = (cookie.rsrnick ? decodeURIComponent(cookie.rsrnick) : null);
+    if(nick && nick.length <= 16) {
+        socket.nick = nick;
     }
     next();
 });
@@ -42,7 +43,7 @@ io.on('connection', function(socket) {
     socket.join(socket.room);
     if(socket.nick) {
         var nick = socket.nick;
-        if(nick.length < 32) {
+        if(nick.length <= 16) {
             socket.nick = nick;
         }
     } else {
@@ -58,7 +59,6 @@ io.on('connection', function(socket) {
         id: socket.id.substr(2),
         nick: socket.nick
     });
-    socket.emit('create_cookie', encodeURIComponent(socket.nick));
     socket.emit('new_nick', socket.nick);
     console.log(socket.nick + ' joined ' + _.find(rooms, { uuid: socket.room}).name);
     
@@ -154,7 +154,7 @@ io.on('connection', function(socket) {
 
     // User wants new nick, checks if available.
     socket.on('set_nick', function(nick) {
-        if(nick && nick.length < 32) {
+        if(nick && nick.length <= 16) {
             var i = 1;
             var oldNick = socket.nick;
             socket.nick = nick;
@@ -163,7 +163,7 @@ io.on('connection', function(socket) {
                 socket.nick = nick + Math.ceil(Math.random() * i);
             }
             _.find(users, { id: socket.id.substr(2) }).nick = socket.nick;
-            socket.emit('create_cookie', encodeURIComponent(socket.nick));
+            socket.emit('set_cookie', encodeURIComponent(socket.nick));
             socket.emit('new_nick', socket.nick);
             console.log(oldNick + ' changed nick to ' + socket.nick);
             if(socket.room != 'home') {

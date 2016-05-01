@@ -74,72 +74,9 @@
          min-height:100%;
          list-style:none;
          padding:12px 0 0;
-         overflow: auto;
          display:flex;
          flex-flow:column;
          justify-content:flex-end;
-         li {
-             padding:0 8px 12px;
-             line-height:32px;
-             display:flex;
-             position:relative;
-             .avatar {
-                 margin:0 8px 0 0;
-             }
-             .message {
-                 background:$white-dark;
-                 padding:6px 8px;
-                 line-height:20px;
-                 word-break:break-all;
-                 max-width:calc(100% - 60px);
-                 border-radius:8px 8px 8px 0;
-                 position:relative;
-                 span {
-                     transition:opacity .3s ease;
-                     font-size:.65em;
-                     position:absolute;
-                     bottom:-9px;
-                     left:1px;
-                     line-height:8px;
-                     opacity:0;
-                     user-select:none;
-                     cursor:default;
-                     pointer-events:none;
-                     text-align:center;
-                 }
-             }
-             &:hover {
-                 .message span {
-                     opacity:1;
-                 }
-             }
-             &.self {
-                 flex-direction:row-reverse;
-                 align-items:flex-end;
-                 .message {
-                     border-radius:8px 8px 0 8px;
-                     span {
-                         left:initial;
-                         right:2px;
-                         text-align:right;
-                     }
-                 }
-             }
-             &.server {
-                 line-height:10px;
-                 .message {
-                     padding:0;
-                     background:none;
-                     text-align:center;
-                     width:100%;
-                     max-width:100%;
-                     font-size:.75em;
-                     span {
-                         font-size:.87em;
-                     }
-                 }
-             }
-         }
      }
      label {
          display:flex;

@@ -6,7 +6,7 @@ const store = io(':3000');
 export default store;
 
 /* Server asked for a session cookie to be created. */
-store.on('create_cookie', (sessionId) => {
+store.on('set_cookie', (sessionId) => {
     document.cookie = 'rsrnick=' + sessionId + ';path=/';
 });
 
