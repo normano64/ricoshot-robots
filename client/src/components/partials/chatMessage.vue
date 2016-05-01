@@ -47,7 +47,7 @@
          word-break:word-all;
          max-width:calc(100% - 40px);
          overflow:hidden;
-         border-radius:8px;
+         border-radius:8px 8px 8px 0;
          span {
              font-weight:600;
              &:after {
@@ -74,6 +74,8 @@
      &.self {
          flex-direction:row-reverse;
          .message {
+             background:$primary;
+             color:white;
              border-radius:8px 8px 0 8px;
          }
          .time {
