@@ -32,4 +32,4 @@ router.redirect({
     '*': '/'
 });
 
-router.start(app, 'body > div');
+router.start(app, '#app');

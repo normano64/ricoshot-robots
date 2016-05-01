@@ -1,11 +1,11 @@
 @mixin respond-to($media) {
     @if $media == small {
-        @media only screen and (max-width:480px) {
+        @media only screen and (max-width:511px) {
             @content;
         }
     }
     @else if $media == medium {
-        @media only screen and (min-width:481px) and (max-width:1000px) {
+        @media only screen and (min-width:512px) and (max-width:1000px) {
             @content;
         }
     }

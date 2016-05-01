@@ -24,12 +24,12 @@
              this.messages = room.chatHistory;
              this.$dispatch('changeTitle', 'in ' + room.name);
          },
-         chatMessage(nick, message, time, player) {
+         chatMessage(nick, message, time, isPlayer) {
              this.messages.push({
                  nick: nick,
                  message: message,
                  time: time,
-                 isPlayer: player
+                 isPlayer: isPlayer
              });
          },
          playerJoined(nick, time) {
