@@ -3,6 +3,7 @@
         <h2>Start a new game</h2>
         <form @submit.prevent="createRoom">
             <input type="text" v-model="name" placeholder="Game name" autocomplete="off"/>
+            <div v-if="createError" class="error">{{ createError }}</div>
             <label :class="{'active': isPublic}">
                 <svg class="icon" v-if="isPublic"><use xlink:href="/static/sprite.svg#icon-checkbox"/></svg>
                 <svg class="icon" v-if="!isPublic"><use xlink:href="/static/sprite.svg#icon-checkbox-blank"/></svg>
@@ -49,9 +50,10 @@
          return {
              isPublic: false,
              drinking: false,
-             name: '',
-             searchQuery: '',
-             rooms: []
+             name: null,
+             searchQuery: null,
+             rooms: [],
+             createError: null
          }
      },
      filters: {
@@ -89,6 +91,9 @@
          },
          reconnected() {
              store.emit('current_rooms');
+         },
+         createRoomError(error) {
+             this.createError = error;
          }
      },
      attached() {
@@ -99,6 +104,7 @@
          store.on('current_rooms', this.currentRooms);
          store.on('players_in_room', this.playersInRoom);
          store.on('reconnect', this.reconnected);
+         store.on('create_room_error', this.createRoomError);
      },
      detached() {
          store.removeListener('new_room', this.newRoom);
@@ -106,6 +112,7 @@
          store.removeListener('current_rooms', this.currentRooms);
          store.removeListener('players_in_room', this.playersInRoom);
          store.removeListener('reconnect', this.reconnected);
+         store.removeListener('create_room_error', this.createRoomError);
      }
  }
 </script>

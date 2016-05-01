@@ -27,6 +27,7 @@ var rooms = [{
 var users = [];
 var emptyRooms = [];
 
+/* Save the cookie value. */
 io.use(function(socket, next) {
     var cookie = cookieParser.parse(socket.request.headers.cookie);
     var nick = (cookie.rsrnick ? decodeURIComponent(cookie.rsrnick) : null);
@@ -36,7 +37,7 @@ io.use(function(socket, next) {
     next();
 });
 
-// Handles socket.io connections.
+/* Handles socket.io connections. */
 io.on('connection', function(socket) {
     /* Set the room to home to prevent the user for entering limbo. */
     socket.room = 'home';
@@ -62,7 +63,7 @@ io.on('connection', function(socket) {
     socket.emit('new_nick', socket.nick);
     console.log(socket.nick + ' joined ' + _.find(rooms, { uuid: socket.room}).name);
     
-    // The user wants to join a room.
+    /* The player wants to join a room. */
     socket.on('join_room', function(uuid) {
         if(uuid != socket.room) {
             var roomIndex = _.findIndex(rooms, { uuid: uuid });
@@ -92,7 +93,7 @@ io.on('connection', function(socket) {
         }
     });
 
-    // The user wants to leave room if in one.
+    /* The player wants to leave the current room. */
     socket.on('leave_room', function() {
         if(socket.room != 'home') {
             var oldRoomName = _.find(rooms, { uuid: socket.room }).name;
@@ -100,14 +101,15 @@ io.on('connection', function(socket) {
             removeUserFromRoom();
             socket.room = 'home';
             socket.join(socket.room);
+            socket.emit('left_room');
             console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + _.find(rooms, { uuid: socket.room }).name);
         }
     });
 
-    // The user wants to join a room, leaves the old room if any.
+    /* The player wants to join a room, leaves the old room if any. */
     socket.on('create_room', function(name, isPublic, drinking) {
-        if(_.findIndex(rooms, { name: name }) == -1 && name && socket.room == 'home') {
-            // Create room with a uuid and general game stuff.
+        if(_.findIndex(rooms, { name: name, isPublic: true }) == -1 && name && name.length <= 16 && socket.room == 'home') {
+            /* Create room with a uuid and general game stuff. */
             var room = {
                 uuid: uuid.v4(),
                 name: name,
@@ -131,11 +133,11 @@ io.on('connection', function(socket) {
             }
             socket.emit('go_to_room', room.uuid);
         } else {
-            socket.emit('room_already_exists');
+            socket.emit('create_room_error', 'room_already_exists');
         }
     });
 
-    // Tell what rooms that are public.
+    /* Tell what rooms that are public. */
     socket.on('current_rooms', function() {
         var publicRooms = [];
         rooms.forEach(function(room) {
@@ -152,9 +154,13 @@ io.on('connection', function(socket) {
         socket.emit('current_rooms', publicRooms);
     });
 
-    // User wants new nick, checks if available.
+    /* The player wants new nick, checks if available. */
     socket.on('set_nick', function(nick) {
-        if(nick && nick.length <= 16) {
+        if(!nick) {
+            socket.emit('nick_modal_error', 'missing_nick');
+        } else if(nick.length > 16) {
+            socket.emit('nick_modal_error', 'nick_longer_than_16_characters');
+        } else {
             var i = 1;
             var oldNick = socket.nick;
             socket.nick = nick;
@@ -174,7 +180,7 @@ io.on('connection', function(socket) {
         }
     });
 
-    // Broadcast chat message to all users in the same room.
+    /* Broadcast chat message to all users in the same room. */
     socket.on('chat_message', function(message) {
         if(socket.room != 'home') {
             var time = (new Date()).getTime();
@@ -183,14 +189,14 @@ io.on('connection', function(socket) {
         }
     });
 
-    // The user disconnects.
+    /* The user disconnects. */
     socket.on('disconnect', function () {
         users.splice(_.findIndex(users, { id: socket.id.substr(2) }), 1);
         console.log(socket.nick + ' left ' + _.find(rooms, { uuid: socket.room }).name);
         removeUserFromRoom();
     });
 
-    // Function to remove user from room.
+    /* Function to remove user from room. */
     function removeUserFromRoom() {
         if(socket.room != 'home') {
             var time = (new Date()).getTime();
@@ -210,7 +216,7 @@ io.on('connection', function(socket) {
         }
     }
 
-    // Save chat message to the rooms chat log.
+    /* Save chat message to the rooms chat log. */
     function saveToChatHistory(message, time, isPlayer) {
         var roomIndex = _.findIndex(rooms, { uuid: socket.room });
         if(rooms[roomIndex].chatHistory.length >= 20) {

@@ -3,6 +3,7 @@
         <h2>Change nickname</h2>
         <form @submit.prevent="changeNick">
             <input type="text" v-model="nick" v-el:nick placeholder="Nickname" @keyup.esc="$dispatch('hideNickModal')"/>
+            <div v-if="nickError" class="error">{{ nickError }}</div>
             <input type="button" value="Cancel" @click="$dispatch('hideNickModal')"/>
             <input type="submit" value="DO IT NOW!"/>
         </form>
@@ -16,7 +17,8 @@
      name: 'nickModalPartial',
      data() {
          return {
-             nick: null
+             nick: null,
+             nickError: null
          }
      },
      methods: {
@@ -25,13 +27,18 @@
          },
          newNick(nick) {
              this.$dispatch('hideNickModal');
+         },
+         nickModalError(error) {
+             this.nickError = error;
          }
      },
      created() {
          store.on('new_nick', this.newNick);
+         store.on('nick_modal_error', this.nickModalError);
      },
      destroyed () {
          store.removeListener('new_nick', this.newNick);
+         store.removeListener('nick_modal_error', this.nickModalError);
      },
      attached() {
          this.$els.nick.focus();

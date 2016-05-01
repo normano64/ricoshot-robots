@@ -61,6 +61,12 @@ input[type=button] {
     margin:6px 0;
     cursor:pointer;
 }
+div.error {
+    border:1px solid $primary;
+    color:$primary;
+    line-height:36px;
+    text-align:center;
+}
 svg.icon {
     vertical-align:bottom;
     display:inline-block;
