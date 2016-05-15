@@ -9,18 +9,30 @@ var dictionary = {
             room_name: 'Room name',
             search_for_room: 'Search for room',
             no_public_rooms: 'There\'s no public rooms right now',
-            no_rooms: 'No rooms found'
+            no_rooms: 'No rooms found',
+            players: 'players',
+            player: 'player',
+            turns: 'turns',
+            turn: 'turn',
+            playeds: 'played',
+            played: 'played'
         },
         sv: {
             create_new_room: 'Skapa ett nytt spelrum',
-            drinking_mode: 'Dricklek',
-            create_room: 'Skapa rum',
+            drinking_mode: 'Dryckesspel',
+            create_room: 'Skapa rummet',
             public_room: 'Publikt rum',
             public_rooms: 'Publika rum',
-            room_name: 'Namn på rum',
+            room_name: 'Namn på rummet',
             search_for_room: 'Sök efter rum',
-            no_public_rooms: 'Det finns inga publika spel just nu',
-            no_rooms: 'Inga rum hittades'
+            no_public_rooms: 'Det finns inga publika rum just nu',
+            no_rooms: 'Inga rum hittades',
+            players: 'spelare',
+            player: 'spelare',
+            turns: 'turer',
+            turn: 'tur',
+            playeds: 'spelade',
+            played: 'spelad'
         }
     },
     roomView: {

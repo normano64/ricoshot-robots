@@ -28,7 +28,7 @@
                 <a v-link="'/room/' + room.uuid">
                     <div>
                         <span class="name">{{room.name}}</span>
-                        <span>{{room.players}} {{room.players | plural 'player'}}, {{room.turns}} {{room.turns | plural 'turn'}} played</span>
+                        <span>{{ room.players }} {{ t(plural(room.players, 'player')) }}, {{ room.turns }} {{ t(plural(room.turns, 'turn')) }} {{ t(plural(room.turns, 'played')) }}</span>
                     </div>
                     <svg class="icon" v-if="room.drinking"><use xlink:href="/static/sprite.svg#icon-drink"/></svg>
                     <svg class="icon"><use xlink:href="/static/sprite.svg#icon-join"/></svg>
@@ -56,21 +56,19 @@
              createError: null
          }
      },
-     filters: {
-         plural: function(value, word) {
-             if(value == 1) {
-                 return word;
-             } else {
-                 return word + 's';
-             }
-         }
-     },
      computed: {
          filteredRooms: function() {
              return this.$options.filters.filterBy(this.rooms, this.searchQuery);
          }
      },
      methods: {
+         plural: function(value, word) {
+             if(value == 1) {
+                 return word;
+             } else {
+                 return word + 's';
+             }
+         },
          newRoom(room) {
              this.rooms.push(room);
          },
