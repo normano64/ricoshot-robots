@@ -35,25 +35,28 @@
          playerJoined(nick, time) {
              this.messages.push({
                  nick: null,
-                 message: nick + ' joined the room',
+                 message: 'joined_room',
                  time: time,
-                 isPlayer: false
+                 isPlayer: false,
+                 args: [nick]
              });
          },
          playerLeft(nick, time) {
              this.messages.push({
                  nick: null,
-                 message: nick + ' left the room',
+                 message: 'left_room',
                  time: time,
-                 isPlayer: false
+                 isPlayer: false,
+                 args: [nick]
              });
          },
          playerChangedNick(oldNick, newNick, time) {
              this.messages.push({
                  nick: null,
-                 message: oldNick + ' changed nick to ' + newNick,
+                 message: 'changed_nick',
                  time: time,
-                 isPlayer: false
+                 isPlayer: false,
+                 args: [oldNick, newNick]
              });
          },
          reconnected() {

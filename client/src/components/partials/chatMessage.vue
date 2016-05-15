@@ -1,7 +1,10 @@
 <template>
     <li class="chat-message" :class="{ 'self': isSelf(message.nick), 'server': !message.isPlayer }">
-        <div class="message">
-            <span v-if="!isSelf(message.nick) && message.isPlayer">{{ message.nick }}</span>{{ message.message }}
+        <div class="message" v-if="message.isPlayer">
+            <span v-if="!isSelf(message.nick)">{{ message.nick }}</span>{{ message.message }}
+        </div>
+        <div class="message" v-if="!message.isPlayer">
+            {{ t(message.message, message.args) }}
         </div>
         <span class="time" v-if="message.isPlayer">{{ message.time | time }}</span>
     </li>
@@ -11,7 +14,7 @@
  import store from '../../store';
 
  export default {
-     name: 'chatPartial',
+     name: 'chatMessagePartial',
      props: ['message'],
      filters: {
          time(text) {

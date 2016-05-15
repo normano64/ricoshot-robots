@@ -36,13 +36,35 @@ var dictionary = {
             change_nick: 'Change nickname',
             nick: 'Nickname',
             cancel: 'Cancel',
-            okay: 'DO IT NOW!',
+            okay: 'DO IT NOW!'
         },
         sv: {
             change_nick: 'Ändra smeknamn',
             nick: 'Smeknamn',
             cancel: 'Avbryt',
-            okay: 'GÖR DET NU!',
+            okay: 'GÖR DET NU!'
+        }
+    },
+    chatPartial: {
+        en: {
+            chat: 'Chat',
+        },
+        sv: {
+            chat: 'Konversation',
+        }
+    },
+    chatMessagePartial: {
+        en: {
+            chat: 'Chat',
+            joined_room: '%s joined the room',
+            left_room: '%s left the room',
+            changed_nick: '%s changed nick to %s'
+        },
+        sv: {
+            chat: 'Konversation',
+            joined_room: '%s anslöt sig till rummet',
+            left_room: '%s lämnade rummet',
+            changed_nick: '%s byte smeknamn till %s'
         }
     }
 };

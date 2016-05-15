@@ -8,10 +8,10 @@
         <a href="#" class="right" @click.prevent="$dispatch('showNickModal')">
             <span class="medium-large">{{ nick }}</span><svg class="icon"><use xlink:href="/static/sprite.svg#icon-person"/></svg>
         </a>
-        <a href="#" class="right" @click="changeLocale('en')" v-if="!currentLocale('en')">
+        <a href="#" class="right" @click.prevent="changeLocale('en')" v-if="!currentLocale('en')">
             <svg class="icon"><use xlink:href="/static/sprite.svg#icon-english"/></svg>
         </a>
-        <a href="#" class="right" @click="changeLocale('sv')" v-if="!currentLocale('sv')">
+        <a href="#" class="right" @click.prevent="changeLocale('sv')" v-if="!currentLocale('sv')">
             <svg class="icon"><use xlink:href="/static/sprite.svg#icon-swedish"/></svg>
         </a>
     </header>

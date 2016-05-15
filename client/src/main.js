@@ -11,16 +11,26 @@ Vue.filter('colorLightness', colorLightness);
 
 Vue.mixin({
     methods: {
-        t(sentence) {
-            return this.translate(sentence, this.$root.locale);
+        t(sentence, args) {
+            var args = args || [];
+            return this.translate(sentence, this.$root.locale, args);
         },
-        translate(sentence, language) {
-            var translation = this.$root.dictionary[this.$options.name][language][sentence];
-            if(translation === undefined) {
-                console.warn('Missing translation for "' + sentence + '" in locale ' + language);
-                translation = null;
+        translate(sentence, language, args) {
+            if(this.$root.dictionary[this.$options.name]) {
+                var translation = this.$root.dictionary[this.$options.name][language][sentence];
+                if(translation === undefined) {
+                    console.warn('Missing translation in ' + this.$options.name + ' for "' + sentence + '" in language ' + language);
+                    translation = null;
+                } else {
+                    args.forEach((value) => {
+                        translation = translation.replace('%s', value);
+                    });
+                }
+                return translation;
+            } else {
+                console.warn('Missing all translations for ' + this.$options.name);
+                return null;
             }
-            return translation;
         }
     }
 });

@@ -1,6 +1,6 @@
 <template>
     <div id="chat">
-        <h2>Chat</h2>
+        <h2>{{ t('chat') }}</h2>
         <div v-el:chat class="content">
             <ul>
                 <chat-message-partial v-for="message in messages" :message="message"></chat-message-partial>

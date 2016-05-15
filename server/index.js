@@ -82,7 +82,7 @@ io.on('connection', function(socket) {
                 if(socket.room != 'home') {
                     var time = (new Date()).getTime();
                     io.to(socket.room).emit('player_joined', socket.nick, time);
-                    saveToChatHistory(socket.nick + ' joined the room', time, false);
+                    saveToChatHistory('joined_room', time, false, [socket.nick]);
                 }
                 if(rooms[roomIndex].isPublic) {
                     io.to('home').emit('players_in_room', socket.room, rooms[roomIndex].players.length);
@@ -175,7 +175,7 @@ io.on('connection', function(socket) {
             if(socket.room != 'home') {
                 var time = (new Date()).getTime();
                 io.to(socket.room).emit('player_changed_nick', oldNick, socket.nick, time);
-                saveToChatHistory(oldNick + ' changed nick to ' + socket.nick, time, false);
+                saveToChatHistory('changed_nick', time, false, [oldNick, socket.nick]);
             }
         }
     });
@@ -201,7 +201,7 @@ io.on('connection', function(socket) {
         if(socket.room != 'home') {
             var time = (new Date()).getTime();
             io.to(socket.room).emit('player_left', socket.nick, time);
-            saveToChatHistory(socket.nick + ' left the room', time, false);
+            saveToChatHistory('left_room', time, false, [socket.nick]);
             
             var roomIndex = _.findIndex(rooms, { uuid: socket.room});
             rooms[roomIndex].players.splice(rooms[roomIndex].players.indexOf(socket.id.substr(2)), 1);
@@ -217,17 +217,28 @@ io.on('connection', function(socket) {
     }
 
     /* Save chat message to the rooms chat log. */
-    function saveToChatHistory(message, time, isPlayer) {
+    function saveToChatHistory(message, time, isPlayer, args) {
         var roomIndex = _.findIndex(rooms, { uuid: socket.room });
         if(rooms[roomIndex].chatHistory.length >= 20) {
             rooms[roomIndex].chatHistory.splice(0, 1);
         }
-        rooms[roomIndex].chatHistory.push({
-            nick: (isPlayer ? socket.nick : null),
-            message: message,
-            time: time,
-            isPlayer: isPlayer
-        });
+        if(isPlayer) {
+            rooms[roomIndex].chatHistory.push({
+                nick: (isPlayer ? socket.nick : null),
+                message: message,
+                time: time,
+                isPlayer: true
+            });
+        } else {
+            var args = args || []
+            rooms[roomIndex].chatHistory.push({
+                nick: (isPlayer ? socket.nick : null),
+                message: message,
+                time: time,
+                isPlayer: false,
+                args: args
+            });
+        }
     }
 });
 
