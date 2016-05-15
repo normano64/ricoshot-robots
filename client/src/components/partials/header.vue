@@ -6,7 +6,7 @@
         <span>Ricoshot Robots</span>
         <div class="title">{{ title }}</div>
         <a href="#" class="right" @click.prevent="$dispatch('showNickModal')">
-            <span class="medium-large">{{ nick }}</span><svg class="icon"><use xlink:href="/static/sprite.svg#icon-person"/></svg>
+            <span>{{ nick }}</span><svg class="icon"><use xlink:href="/static/sprite.svg#icon-person"/></svg>
         </a>
         <a href="#" class="right" @click.prevent="changeLocale('en')" v-if="!currentLocale('en')">
             <svg class="icon"><use xlink:href="/static/sprite.svg#icon-english"/></svg>

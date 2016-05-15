@@ -33,7 +33,7 @@
              errorMessage: '',
              overlay: false,
              overlayClickListener: false,
-             locale: 'en',
+             locale: this.getLocale(),
              dictionary: dictionary
          }
      },
@@ -80,7 +80,26 @@
              this.overlay = true;
          },
          changeLocale(locale) {
+             document.cookie = 'rsrlocale=' + locale + ';path=/';
              this.locale = locale;
+         },
+         getLocale() {
+             var locale = this.getCookie('rsrlocale');
+             if(locale) {
+                 return locale;
+             } else {
+                 return 'en';
+             }
+         },
+         /* from http://stackoverflow.com/a/15724300 */
+         getCookie(name) {
+             var value = "; " + document.cookie;
+             var parts = value.split("; " + name + "=");
+             if(parts.length == 2) {
+                 return parts.pop().split(";").shift();
+             } else {
+                 return null
+             }
          }
      },
      created() {
