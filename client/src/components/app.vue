@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <header-partial></header-partial>
+        <header-partial :locale="locale"></header-partial>
         <div id="main">
             <router-view></router-view>
         </div>
@@ -12,6 +12,7 @@
 
 <script>
  import store from '../store';
+ import dictionary from './../translation';
  import headerPartial from './partials/header.vue';
  import nickModalPartial from './partials/nickModal.vue';
  import errorModalPartial from './partials/errorModal.vue';
@@ -31,13 +32,16 @@
              errorModal: false,
              errorMessage: '',
              overlay: false,
-             overlayClickListener: false
+             overlayClickListener: false,
+             locale: 'en',
+             dictionary: dictionary
          }
      },
      events: {
          showNickModal: 'showNickModal',
          hideNickModal: 'hideNickModal',
-         hideOverlay: 'hideOverlay'
+         hideOverlay: 'hideOverlay',
+         changeLocale: 'changeLocale'
      },
      methods: {
          goToRoom(uuid) {
@@ -74,6 +78,9 @@
              this.errorMessage = 'The server is offline';
              this.overlayClickListener = false;
              this.overlay = true;
+         },
+         changeLocale(locale) {
+             this.locale = locale;
          }
      },
      created() {

@@ -3,9 +3,16 @@
         <a v-link="'/'">
             <svg class="icon"><use xlink:href="/static/sprite.svg#icon-home"/></svg>
         </a>
-        <span>Ricoshot Robots{{ title }}</span>
+        <span>Ricoshot Robots</span>
+        <div class="title">{{ title }}</div>
         <a href="#" class="right" @click.prevent="$dispatch('showNickModal')">
             <span class="medium-large">{{ nick }}</span><svg class="icon"><use xlink:href="/static/sprite.svg#icon-person"/></svg>
+        </a>
+        <a href="#" class="right" @click="changeLocale('en')" v-if="!currentLocale('en')">
+            <svg class="icon"><use xlink:href="/static/sprite.svg#icon-english"/></svg>
+        </a>
+        <a href="#" class="right" @click="changeLocale('sv')" v-if="!currentLocale('sv')">
+            <svg class="icon"><use xlink:href="/static/sprite.svg#icon-swedish"/></svg>
         </a>
     </header>
 </template>
@@ -15,6 +22,7 @@
 
  export default {
      name: 'headerPartial',
+     props: ['locale'],
      data() {
          return {
              nick: store.nick,
@@ -26,10 +34,16 @@
              this.nick = nick;
          },
          joinedRoom(room) {
-             this.title = ' / ' + room.name;
+             this.title = room.name;
          },
          leftRoom() {
              this.title = null;
+         },
+         changeLocale(locale) {
+             this.$dispatch('changeLocale', locale);
+         },
+         currentLocale(locale) {
+             return this.locale === locale;
          }
      },
      created() {
@@ -60,34 +74,50 @@
      width:100%;
      font-weight:700;
      a:link, a:visited {
+         z-index:1;
          padding:0 15px;
          line-height:54px;
          float:left;
          text-align:center;
          text-decoration:none;
          color:white;
-         user-select:none;
+         position:relative;
          span + svg.icon {
              margin-left: 8px;
-         }
-         svg.icon {
-             height:24px;
-             width:24px;
-             fill:white;
-             margin:15px 0;
          }
          &.right {
              float:right;
          }
-         &:hover {
-             background:white;
-             color:$gray;
-             svg.icon {
-                 fill:$gray;
-             }
+     }
+     svg.icon {
+         height:24px;
+         width:24px;
+         fill:white;
+         margin:15px 0;
+         &.language {
+             margin-left:8px;
+             cursor:pointer;
          }
      }
+     a:hover, a:active {
+         background:white;
+         color:$gray;
+         svg.icon {
+             fill:$gray;
+         }
+     }
+     .title {
+         position:absolute;
+         left:0;
+         right:0;
+         top:0;
+         margin:0 auto;
+         text-align:center;
+         z-index:0;
+     }
      > span {
+         z-index:1;
+         position:relative;
          padding:0 8px;
      }
  }

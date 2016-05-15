@@ -1,26 +1,26 @@
 <template>
     <div id="create">
-        <h2>Start a new game</h2>
+        <h2>{{ t('create_new_room') }}</h2>
         <form @submit.prevent="createRoom">
-            <input type="text" v-model="name" placeholder="Game name" autocomplete="off"/>
+            <input type="text" v-model="name" :placeholder="t('room_name')" autocomplete="off"/>
             <div v-if="createError" class="error">{{ createError }}</div>
             <label :class="{'active': isPublic}">
                 <svg class="icon" v-if="isPublic"><use xlink:href="/static/sprite.svg#icon-checkbox"/></svg>
                 <svg class="icon" v-if="!isPublic"><use xlink:href="/static/sprite.svg#icon-checkbox-blank"/></svg>
-                <input type="checkbox" v-model="isPublic"/>Public game
+                <input type="checkbox" v-model="isPublic"/>{{ t('public_room') }}
             </label>
             <label :class="{'active': drinking}">
                 <svg class="icon" v-if="drinking"><use xlink:href="/static/sprite.svg#icon-checkbox"/></svg>
                 <svg class="icon" v-if="!drinking"><use xlink:href="/static/sprite.svg#icon-checkbox-blank"/></svg>
-                <input type="checkbox" v-model="drinking"/>Drinking mode
+                <input type="checkbox" v-model="drinking"/>{{ t('drinking_mode') }}
             </label>
-            <input type="submit" value="Create game"/>
+            <input type="submit" :value="t('create_room')"/>
         </form>
     </div>
     <div id="roomlist">
-        <h2>Public games</h2>
+        <h2>{{ t('public_rooms') }}</h2>
         <label>
-            <input type="text" v-model="searchQuery" placeholder="Room name" autocomplete="off"/>
+            <input type="text" v-model="searchQuery" :placeholder="t('search_for_room')" autocomplete="off"/>
             <svg class="icon"><use xlink:href="/static/sprite.svg#icon-search"/></svg>
         </label>
         <ul>
@@ -34,8 +34,8 @@
                     <svg class="icon"><use xlink:href="/static/sprite.svg#icon-join"/></svg>
                 </a>
             </li>
-            <li class="error" v-if="!rooms.length && !searchQuery">There's no public games right now</li>
-            <li class="error" v-if="!filteredRooms.length && searchQuery">No games found</li>
+            <li class="error" v-if="!rooms.length && !searchQuery">{{ t('no_public_rooms') }}</li>
+            <li class="error" v-if="!filteredRooms.length && searchQuery">{{ t('no_rooms') }}</li>
         </ul>
     </div>
 </template>

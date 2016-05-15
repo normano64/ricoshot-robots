@@ -1,13 +1,13 @@
 <template>
     <div>
-        <h2>Change nickname</h2>
+        <h2>{{ t('change_nick') }}</h2>
         <form @submit.prevent="changeNick">
-            <input type="text" v-model="nick" v-el:nick placeholder="Nickname" @keyup.esc="$dispatch('hideNickModal')"/>
+            <input type="text" v-model="nick" v-el:nick :placeholder="t('nick')" @keyup.esc="$dispatch('hideNickModal')"/>
             <div v-if="nickError" class="error">{{ nickError }}</div>
-            <input type="button" value="Cancel" @click="$dispatch('hideNickModal')"/>
-            <input type="submit" value="DO IT NOW!"/>
+            <input type="button" :value="t('cancel')" @click="$dispatch('hideNickModal')"/>
+            <input type="submit" :value="t('okay')"/>
         </form>
-    </header>
+    </div>
 </template>
 
 <script>
