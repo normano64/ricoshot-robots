@@ -78,6 +78,14 @@ var dictionary = {
             left_room: '%s lämnade rummet',
             changed_nick: '%s byte smeknamn till %s'
         }
+    },
+    winnerPartial: {
+	en: {
+	    winner_is: 'The winner is...'
+	},
+	sv: {
+	    winner_is: 'Vinnaren är...'
+	}
     }
 };
 
