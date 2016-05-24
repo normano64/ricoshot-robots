@@ -219,21 +219,28 @@ function createMap(aGoals, aWalls) {
 }
 
 function randomMap() {
-		var gamePads = [0, 1, 2, 3];
-		var gameGoals = [];
-		var gameWalls = [];
+	var gamePads = [0, 1, 2, 3];
+	var gameGoals = [];
+	var gameWalls = [];
+	var gameBoard = makePad();
+	
+	while (gamePads.length != 0) {
+		var nr = Math.floor(Math.random()*gamePads.length);
+		var tmpGoalsAndWalls = goalsAndWalls[gamePads[nr]];
 
-		while (gamePads.length != 0) {
-				var nr = Math.floor(Math.random()*gamePads.length);
-				var tmpGoalsAndWalls = goalsAndWalls[gamePads[nr]];
+		gameGoals = gameGoals.concat([tmpGoalsAndWalls.goals[0]]);
+		gameWalls = gameWalls.concat([tmpGoalsAndWalls.walls[0]]);
 
-				gameGoals = gameGoals.concat([tmpGoalsAndWalls.goals[0]]);
-				gameWalls = gameWalls.concat([tmpGoalsAndWalls.walls[0]]);
+		gamePads.splice(nr, 1);
+	}
 
-				gamePads.splice(nr, 1);
-		}
-		
-		return [gameGoals, gameWalls];
+	gameGoals = improvedTwist(gameGoals);
+	gameWalls = twistWalls(gameWalls);
+
+	// ANROPAR createWalls SOM SKAPAR ALLA VÄGGAR PÅ SPELPLANEN
+	for (var i = 0; i < gameWalls.length; i++) { gameBoard = createWalls( gameBoard, gameWalls[i].placement.x, gameWalls[i].placement.y, gameWalls[i].wall)};
+
+	return [gameGoals, gameBoard];
 }
 
 // VÄLJER VILKET MÅL SOM KOMMER HÄR NÄST
