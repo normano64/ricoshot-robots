@@ -47,7 +47,7 @@
              messages: [],
      	     winner: 'Steve',
 	         winnerToggle: false,
-	         chatToggle: false
+	         chatToggle: false,
              walls: [],
              robots: [],
              players: []
