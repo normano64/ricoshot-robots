@@ -20,10 +20,12 @@
 	        <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
 	        <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
         </div>
-	    <chat-partial :messages="messages"></chat-partial>
+	    <a id="chatButton" href="#" class="right" @click.prevent="toggleChat">
+	        <svg class="icon" width="25" height="25"><use xlink:href="/static/sprite.svg#icon-chat"/></svg>
+	    </a>
+	    <chat-partial :class="{ 'show':chatToggle }" :messages="messages"></chat-partial>
     </div>
 </template>
-
 <script>
  import _ from 'lodash';
  import store from '../../store';
@@ -43,14 +45,18 @@
      data() {
          return {
              messages: [],
-	         winner: 'Steve',
+     	     winner: 'Steve',
 	         winnerToggle: false,
+	         chatToggle: false
              walls: [],
              robots: [],
              players: []
          }
      },
      methods: {
+	     toggleChat() {
+	         this.chatToggle = !this.chatToggle;
+	     },
 	     toggleWinner() {
 	         this.winnerToggle = !this.winnerToggle;
 	     },
@@ -146,13 +152,24 @@
 <style lang="sass">
  @import "variables";
  @import 'mixin';
- 
+
+ #chatButton {
+     z-index: +1;
+ }
+
+ #room {
+     display:flex;
+     justify-content:center;
+     position:relative;
+     overflow:hidden;
+ }
  #board {
      /* width:680px; */
      /* height:512px; */
      /* float:left; */
      position:relative;
      padding:12px;
+     flex:1;
      overflow:hidden;
      display:flex;
      justify-content:space-between;
@@ -211,6 +228,15 @@
          width:277px;
          height:518px;
      }
+     svg.icon {
+         height:24px;
+         width:24px;
+         fill:white;
+         margin:15px 0;
+         &.language {
+             margin-left:8px;
+             cursor:pointer;
+         }
+     }
  }
- 
 </style>
