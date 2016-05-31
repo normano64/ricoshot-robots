@@ -44,9 +44,11 @@ var router = new Router({
 
 router.map({
     '/': {
+        name: 'Home',
         component: homeView
     },
     '/room/:uuid': {
+        name: 'Room',
         component: roomView
     }
 });

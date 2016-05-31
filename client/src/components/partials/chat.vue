@@ -59,15 +59,6 @@
  #chat {
      display:flex;
      flex-flow:column;
-     width:320px;
-     height:512px;
-     padding:12px;
-     position:absolute;
-     right: 0;
-     transition:transform .3s ease;
-     &.show {
-	     transform:translateX(320px);
-     }
      h2 {
          text-align:center;
      }

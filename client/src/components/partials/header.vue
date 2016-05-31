@@ -8,6 +8,9 @@
         <a href="#" class="right" @click.prevent="$dispatch('showNickModal')">
             <span>{{ nick }}</span><svg class="icon"><use xlink:href="/static/sprite.svg#icon-person"/></svg>
         </a>
+        <a href="#" class="right chat-button" @click.prevent="toggleChat()" v-if="$route.name == 'Room'">
+            <svg class="icon"><use xlink:href="/static/sprite.svg#icon-chat"/></svg>
+        </a>
         <a href="#" class="right" @click.prevent="changeLocale('en')" v-if="!currentLocale('en')">
             <svg class="icon"><use xlink:href="/static/sprite.svg#icon-english"/></svg>
         </a>
@@ -44,6 +47,9 @@
          },
          currentLocale(locale) {
              return this.locale === locale;
+         },
+         toggleChat() {
+             store.event.emit('toggle_chat');
          }
      },
      created() {
@@ -119,6 +125,12 @@
          z-index:1;
          position:relative;
          padding:0 8px;
+     }
+     .chat-button {
+         display:none;
+         @include respond-to(small-medium) {
+             display:block;
+         }
      }
  }
 </style>

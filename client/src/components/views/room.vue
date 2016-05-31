@@ -20,10 +20,7 @@
 	        <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
 	        <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
         </div>
-	    <a id="chatButton" href="#" class="right" @click.prevent="toggleChat">
-	        <svg class="icon" width="25" height="25"><use xlink:href="/static/sprite.svg#icon-chat"/></svg>
-	    </a>
-	    <chat-partial :class="{ 'show':chatToggle }" :messages="messages"></chat-partial>
+	    <chat-partial :class="{ 'show': chatToggle }" :messages="messages"></chat-partial>
     </div>
 </template>
 <script>
@@ -136,6 +133,7 @@
          store.on('player_left', this.playerLeft);
          store.on('player_changed_nick', this.playerChangedNick);
          store.on('reconnect', this.reconnected);
+         store.event.on('toggle_chat', this.toggleChat);
      },
      detached() {
          store.removeListener('joined_room', this.joinedRoom);
@@ -144,6 +142,7 @@
          store.removeListener('player_left', this.playerLeft);
          store.removeListener('player_changed_nick', this.playerChangedNick);
          store.removeListener('reconnect', this.reconnected);
+         store.event.removeListener('toggle_chat', this.toggleChat);
          store.emit('leave_room');
      }
  }
@@ -153,20 +152,7 @@
  @import "variables";
  @import 'mixin';
 
- #chatButton {
-     z-index: +1;
- }
-
- #room {
-     display:flex;
-     justify-content:center;
-     position:relative;
-     overflow:hidden;
- }
  #board {
-     /* width:680px; */
-     /* height:512px; */
-     /* float:left; */
      position:relative;
      padding:12px;
      flex:1;
@@ -199,7 +185,7 @@
 	     }
      }
      .nicklist {
-         width:277px;
+         width:177px;
      }
      .overlay {
 	     position:absolute;
@@ -227,15 +213,15 @@
      #chat {
          width:277px;
          height:518px;
-     }
-     svg.icon {
-         height:24px;
-         width:24px;
-         fill:white;
-         margin:15px 0;
-         &.language {
-             margin-left:8px;
-             cursor:pointer;
+         transition:transform .3s ease;
+         background:white;
+         &.show {
+	         transform:translateX(320px);
+         }
+         @include respond-to(small-medium) {
+             position:absolute;
+             right:0;
+             z-index:99
          }
      }
  }

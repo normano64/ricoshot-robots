@@ -14,3 +14,5 @@ store.on('set_cookie', (sessionId) => {
 store.on('new_nick', (nick) => {
     store.nick = nick;
 });
+
+store.event = new EventEmitter();
