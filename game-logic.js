@@ -18,9 +18,9 @@ var goalsAndWalls = [
 						[ {color: "red", sign: "star", placement: {x: 2, y: 1}}, {color: "yellow", sign: "cogwheel", placement: {x: 6, y: 4}},
 							{color: "blue", sign: "moon", placement: {x: 5, y: 6}}, {color: "green", sign: "planet", placement: {x: 1, y: 3}}, {color: "multi", sign: "whirlwind", placement: {x: 3, y: 7}}]],
 				walls: [
-						[ { placement: {x: 1, y: 3}, wall: ["top", "right"]}, { placement: {x: 2, y: 5}, wall: ["bottom", "right"]}, { placement: {x: 6, y: 1}, wall: ["bottom", "left"]},
+						[ { placement: {x: 1, y: 3}, wall: ["top", "right"], p: 0}, { placement: {x: 2, y: 5}, wall: ["bottom", "right"]}, { placement: {x: 6, y: 1}, wall: ["bottom", "left"]},
 							{ placement: {x: 5, y: 4}, wall: ["top", "left"]}, { placement: {x: 7, y: 5}, wall: ["bottom", "right"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]},
-							{ placement: {x: 3, y: 0}, wall: ["right"]}, { placement: {x: 0, y: 6}, wall: ["top"]}
+							{ placement: {x: 3, y: 0}, wall: ["right"]}, { placement: {x: 0, y: 7}, wall: ["top"]}
 						], []
 				]},
 		{ 
@@ -31,7 +31,7 @@ var goalsAndWalls = [
 						[ {color: "red", sign: "moon", placement: {x: 3, y: 6}}, {color: "green", sign: "cogwheel", placement: {x: 1, y: 2}},
 							{color: "blue", sign: "planet", placement: {x: 6, y: 5}}, {color: "yellow", sign: "star", placement: {x: 6, y: 1}}]],
 				walls: [
-						[ { placement: {x: 3, y: 6}, wall: ["bottom", "left"]}, { placement: {x: 6, y: 2}, wall: ["bottom", "right"]}, { placement: {x: 4, y: 1}, wall: ["top", "left"]},
+					[ { placement: {x: 3, y: 6}, wall: ["bottom", "left"], p: 1}, { placement: {x: 6, y: 2}, wall: ["bottom", "right"]}, { placement: {x: 4, y: 1}, wall: ["top", "left"]},
 							{ placement: {x: 1, y: 2}, wall: ["top", "right"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]}, { placement: {x: 1, y: 0}, wall: ["right"]},
 							{ placement: {x: 0, y: 5}, wall: ["bottom"]}
 						], []
@@ -44,9 +44,9 @@ var goalsAndWalls = [
 						[ {color: "red", sign: "cogwheel", placement: {x: 7, y: 5}}, {color: "blue", sign: "star", placement: {x: 5, y: 2}},
 							{color: "green", sign: "moon", placement: {x: 2, y: 4}}, {color: "yellow", sign: "planet", placement: {x: 1, y: 6}}]],
 				walls: [
-						[ { placement: {x: 2, y: 4}, wall: ["bottom", "right"]}, { placement: {x: 1, y: 1}, wall: ["bottom", "left"]}, { placement: {x: 6, y: 2}, wall: ["top", "right"]},
+					[ { placement: {x: 2, y: 4}, wall: ["bottom", "right"], p: 2}, { placement: {x: 1, y: 1}, wall: ["bottom", "left"]}, { placement: {x: 6, y: 2}, wall: ["top", "right"]},
 							{ placement: {x: 7, y: 5}, wall: ["top", "left"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]}, { placement: {x: 3, y: 0}, wall: ["right"]},
-							{ placement: {x: 0, y: 5}, wall: ["top"]}
+							{ placement: {x: 0, y: 6}, wall: ["top"]}
 						], []
 				]},
 		{ 
@@ -57,7 +57,7 @@ var goalsAndWalls = [
 					[ {color: "red", sign: "planet", placement: {x: 1, y: 2}}, {color: "blue", sign: "cogwheel", placement: {x: 2, y: 6}},
 						{color: "green", sign: "star", placement: {x: 5, y: 1}}, {color: "yellow", sign: "moon", placement: {x: 6, y: 4}}]],
 				walls: [
-						[ { placement: {x: 6, y: 3}, wall: ["bottom", "left"]}, { placement: {x: 4, y: 5}, wall: ["top", "right"]}, { placement: {x: 2, y: 1}, wall: ["top", "left"]},
+					[ { placement: {x: 6, y: 3}, wall: ["bottom", "left"], p: 3}, { placement: {x: 4, y: 5}, wall: ["top", "right"]}, { placement: {x: 2, y: 1}, wall: ["top", "left"]},
 							{ placement: {x: 1, y: 6}, wall: ["bottom", "right"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]}, { placement: {x: 4, y: 0}, wall: ["right"]},
 							{ placement: {x: 0, y: 4}, wall: ["top"]}
 						], []
@@ -66,26 +66,26 @@ var goalsAndWalls = [
 // export default goalsAndWalls;
 
 // BYGGER ALLA VÄGGAR PÅ SPELPLANEN
-function createWalls(gamepad, x, y, placements) {
+function createWalls(gamepad, walls) {
 
-		for (var i = 0; i < placements.length; i++) {
-				if (placements[i] == "top") { 
-						gamepad[x][y].top = false;
-						gamepad[x][y-1].bottom = false;
-				}
-				if (placements[i] == "bottom") {
-						gamepad[x][y].bottom = false;
-						gamepad[x][y+1].top = false;
-				}
-				if (placements[i] == "right") {
-						gamepad[x][y].right = false;
-						gamepad[x+1][y].left = false;
-				}
-				if (placements[i] == "left") {
-						gamepad[x][y].left = false;
-						gamepad[x-1][y].right = false;
-				}
+    walls.forEach(function(wall) {
+		if (wall == "top") {
+			gamepad[wall.x][wall.y].top = false;
+			gamepad[wall.x][wall.y-1].bottom = false;
 		}
+		if (wall == "bottom") {
+			gamepad[wall.x][wall.y].bottom = false;
+			gamepad[wall.x][wall.y+1].top = false;
+		}
+		if (wall == "right") {
+			gamepad[wall.x][wall.y].right = false;
+			gamepad[wall.x+1][wall.y].left = false;
+		}
+		if (wall == "left") {
+			gamepad[wall.x][wall.y].left = false;
+			gamepad[wall.x-1][wall.y].right = false;
+		}
+	});
 
 		return gamepad;
 }
@@ -98,7 +98,13 @@ function makePad() {
 				gamePad[i] = [];
 
 				for (var j = 0; j < n; j++) {
-						gamePad[i][j] = {top: true, right: true, bottom: true, left: true, robot: false};
+					gamePad[i][j] = {
+                        top: true,
+                        right: true,
+                        bottom: true,
+                        left: true,
+                        robot: false
+                    };
 
 						if (i == 0)  gamePad[i][j].left = false;
 						if (i == 15) gamePad[i][j].right = false;
@@ -111,52 +117,100 @@ function makePad() {
 }
 
 // VRIDER VÄGGARNA
-function twistWalls(walls) {
-
-		for (var i = 0; i < walls[1].length; i++) {
-				tmpy = walls[1][i].placement.y;
-				walls[1][i].placement.y = walls[1][i].placement.x;
-				walls[1][i].placement.x = 15 - tmpy;
-
-				for (var j = 0; j < walls[1][i].wall.length; j++) {
-						if (walls[1][i].wall[j] == "top")    { walls[1][i].wall[j] = "right"; }
-						else if (walls[1][i].wall[j] == "right")  { walls[1][i].wall[j] = "bottom" }
-						else if (walls[1][i].wall[j] == "bottom") { walls[1][i].wall[j] = "left"; }
-						else if (walls[1][i].wall[j] == "left")   { walls[1][i].wall[j] = "top"; }
-				}
-		}
-
-		for (var i = 0; i < walls[2].length; i++) {
-				tmpx = walls[2][i].placement.x;
-				walls[2][i].placement.x = walls[2][i].placement.y;
-				walls[2][i].placement.y = 15 - tmpx;
-				
-				for (var j = 0; j < walls[2][i].wall.length; j++) {
-						if (walls[2][i].wall[j] == "top")    { walls[2][i].wall[j] = "left"; }
-						else if (walls[2][i].wall[j] == "right")  { walls[2][i].wall[j] = "top"; }
-						else if (walls[2][i].wall[j] == "bottom") { walls[2][i].wall[j] = "right"; }
-						else if (walls[2][i].wall[j] == "left")   { walls[2][i].wall[j] = "bottom"; }
-				}			
-		}
-
-		for (var i = 0; i < walls[3].length; i++) {
-				tmpy = walls[3][i].placement.x;
-				tmpx = walls[3][i].placement.y;
-				walls[3][i].placement.x = 15 - tmpy;
-				walls[3][i].placement.y = 15 - tmpx;
-
-				for (var j = 0; j < walls[3][i].wall.length; j++) {
-						if (walls[3][i].wall[j] == "top")    { walls[3][i].wall[j] = "bottom"; }
-						else if (walls[3][i].wall[j] == "right")  { walls[3][i].wall[j] = "left"; }
-						else if (walls[3][i].wall[j] == "bottom") { walls[3][i].wall[j] = "top"; }
-						else if (walls[3][i].wall[j] == "left")   { walls[3][i].wall[j] = "right"; }
-				}
-		}
-		return walls[0].concat(walls[1].concat(walls[2].concat(walls[3])));
+function twistWalls(pads) {
+    var rotatedWalls = [];
+    pads.forEach(function(pad, index) {
+        if(index == 1) {
+            pad.forEach(function(tile) {
+                var walls = [];
+                tile.wall.forEach(function(wall) {
+                    switch(wall) {
+                        case "top":
+                            walls.push("right");
+                            break;
+                        case "right":
+                            walls.push("bottom");
+                            break;
+                        case "bottom":
+                            walls.push("left");
+                            break;
+                        case "left":
+                            walls.push("top");
+                            break;
+                    }
+                });
+                rotatedWalls.push({
+                    x: 15 - tile.placement.y,
+                    y: tile.placement.x,
+                    walls: walls
+                });
+            });
+        } else if(index == 2) {
+            pad.forEach(function(tile) {
+                var walls = [];
+                tile.wall.forEach(function(wall) {
+                    switch(wall) {
+                        case "top":
+                            walls.push("bottom");
+                            break;
+                        case "right":
+                            walls.push("left");
+                            break;
+                        case "bottom":
+                            walls.push("top");
+                            break;
+                        case "left":
+                            walls.push("right");
+                            break;
+                    }
+                });
+                rotatedWalls.push({
+                    x: 15 - tile.placement.x,
+                    y: 15 - tile.placement.y,
+                    walls: walls
+                });
+            });
+        } else if(index == 3) {
+            pad.forEach(function(tile) {
+                var walls = [];
+                tile.wall.forEach(function(wall) {
+                    switch(wall) {
+                        case "top":
+                            walls.push("left");
+                            break;
+                        case "right":
+                            walls.push("top");
+                            break;
+                        case "bottom":
+                            walls.push("right");
+                            break;
+                        case "left":
+                            walls.push("bottom");
+                            break;
+                    }
+                });
+                rotatedWalls.push({
+                    x: tile.placement.y,
+                    y: 15 - tile.placement.x,
+                    walls: walls
+                });
+            });
+        } else {
+            pad.forEach(function(tile) {
+                console.log(tile);
+                rotatedWalls.push({
+                    x: tile.placement.x,
+                    y: tile.placement.y,
+                    walls: tile.wall
+                });
+            });
+        }
+    });
+	return rotatedWalls;
 }
 
 // VRIDER MÅLEN
-function improvedTwist(goals) {
+function twistGoals(goals) {
 		
 		for (var i = 0; i < goals[1].length; i++) {
 				tmpy = goals[1][i].placement.y;
@@ -177,48 +231,43 @@ function improvedTwist(goals) {
 				goals[3][i].placement.y = 15 - tmpx;
 		}
 
-		return goals[0].concat(goals[1].concat(goals[2].concat(goals[3])));	
+		return goals[0].concat(goals[1], goals[2], goals[3]);
 }
 
 // PLACERAR UT ROBOTORNA 
-function placeRobots(arrRobots) {
-		var xy = [];
-		
-		for(var i = 0; i < arrRobots.length; i++) {
-				tmpx = Math.floor(Math.random() * 16);
-				tmpy = Math.floor(Math.random() * 16);
+module.exports.placeRobots = function placeRobots() {
+    var robots = [
+        { color: "red", x: null, y: null },
+		{ color: "blue", x: null, y: null },
+		{ color: "green", x: null, y: null },
+		{ color: "yellow", x: null, y: null }];
 
-				tmp = {tmpx, tmpy};
-								
-				if ((tmpx == 7 && tmpy == 7) || (tmpx == 8 && tmpy == 7) ||
-						(tmpx == 7 && tmpy == 8) ||	(tmpx == 8 && tmpy == 8)) {
-						i--;
-				} else {
-						while(gamePad[tmpx][tmpy].robot == false) {
-								arrRobots[i].placement.x = tmpx;
-								arrRobots[i].placement.y = tmpy;
-								gamePad[tmpx][tmpy].robot = true;
-						}
-				}
-		}
-		
-		return arrRobots;
+	for(var i = 0; i < robots.length; i++) {
+        while(true) {
+			var tmpx = Math.floor(Math.random() * 16);
+			var tmpy = Math.floor(Math.random() * 16);
+            var placed = true;
+
+			if (!(tmpx == 7 && tmpy == 7) || !(tmpx == 8 && tmpy == 7) ||
+				!(tmpx == 7 && tmpy == 8) || !(tmpx == 8 && tmpy == 8)) {
+                    robots.forEach(function(robot) {
+                        if(robot.x == tmpx && robot.y == tmpy) {
+                            placed = false;
+                        }
+                    });
+				    if(placed) {
+					    robots[i].x = tmpx;
+					    robots[i].y = tmpy;
+                        break;
+				    }
+			}
+        }
+	}
+	return robots;
 }
 
 // SKAPAR SPELPLANEN
-function createMap(aGoals, aWalls) {
-		var pa = makePad(); // SKAPAR BRÄDET
-		var goalsPrim = improvedTwist(aGoals);
-		var tmpWalls = twistWalls(aWalls);
-		
-		for (var i = 0; i < tmpWalls.length; i++) { pa = createWalls( pa, tmpWalls[i].placement.x, tmpWalls[i].placement.y, tmpWalls[i].wall);} // ANROPAR createWalls SOM SKAPAR ALLA VÄGGAR PÅ SPELPLANEN
-
-		console.log(JSON.stringify(pa));
-		
-		return [pa, goalsPrim];
-}
-
-function randomMap() {
+module.exports.generateMap = function generateMap() {
 	var gamePads = [0, 1, 2, 3];
 	var gameGoals = [];
 	var gameWalls = [];
@@ -231,16 +280,18 @@ function randomMap() {
 		gameGoals = gameGoals.concat([tmpGoalsAndWalls.goals[0]]);
 		gameWalls = gameWalls.concat([tmpGoalsAndWalls.walls[0]]);
 
-		gamePads.splice(nr, 1);
+		var rm = gamePads.splice(nr, 1);
 	}
 
-	gameGoals = improvedTwist(gameGoals);
+	gameGoals = twistGoals(gameGoals);
 	gameWalls = twistWalls(gameWalls);
 
 	// ANROPAR createWalls SOM SKAPAR ALLA VÄGGAR PÅ SPELPLANEN
-	for (var i = 0; i < gameWalls.length; i++) { gameBoard = createWalls( gameBoard, gameWalls[i].placement.x, gameWalls[i].placement.y, gameWalls[i].wall)};
+	for (var i = 0; i < gameWalls.length; i++) {
+        gameBoard = createWalls(gameBoard, gameWalls);
+    }
 
-	return [gameGoals, gameBoard];
+	return { goals: gameGoals, walls: gameWalls };
 }
 
 // VÄLJER VILKET MÅL SOM KOMMER HÄR NÄST
@@ -254,43 +305,6 @@ function chooseGoal() {
 								" at x: " + goal.placement.x + " y: "+ goal.placement.y);
 }
 
-// "SKAPAR" ETT GAME
-function game() {
-		/*
-		var pad1 = goalsAndWalls[0];
-		var pad2 = goalsAndWalls[2];
-		var pad3 = goalsAndWalls[3];
-		var pad4 = goalsAndWalls[1];
-
-		var gameGoals = [pad1.goals[0], pad2.goals[0], pad3.goals[0], pad4.goals[0]]; // The goals
-		var gameWalls = [pad1.walls[0], pad2.walls[0], pad3.walls[0], pad4.walls[0]]; // The walls
-		
-		var gamesGoalandWalls = createMap(gameGoals, gameWalls);
-		*/
-		
-		var gameGoalsAndWalls = randomMap();
-		gameGoalsandWalls = createMap(gameGoalsAndWalls[0], gameGoalsAndWalls[1]);
-
-		robots = placeRobots(robots);
-		console.log("Robots: " + JSON.stringify(robots));
-
-		gamePad = gameGoalsandWalls[0];
-		goals = gameGoalsandWalls[1];
-		
-		chooseGoal();
-		
-		if (goal.color != "multi") {
-				rcolor = robots.find(function(e) { return e.color == goal.color});
-				console.log("rcolor: " + JSON.stringify(rcolor));
-				if (goal.placement == rcolor.placement) {
-
-				}
-		} else { // DETTA ÄR INTE KLART
-				rcolor = robots;
-		}
-				
-		return gamePad;
-}
 
 // KOLLAR OM ROBOTEN ÄR I DET RÄTTA MÅLET
 function checkGoal() {
@@ -328,7 +342,7 @@ function redo() {
 }
 
 // gamePad = primGame();
-gamePad = game();
+//gamePad = game();
 
 function move(gameplan, e, robot) {
 		var i = 0;
@@ -336,65 +350,65 @@ function move(gameplan, e, robot) {
 		// robot = activeRobot;
 		
 		if ( e == '38' ) { // up arrow
-				while (gameplan[robot.placement.x][robot.placement.y-i].top == true) {		
-							if ((robot.placement.y - i) > 0 &&
-									gameplan[robot.placement.x][robot.placement.y-(i+1)].robot == false) {
+				while (gameplan[robot.x][robot.y-i].top == true) {
+							if ((robot.y - i) > 0 &&
+									gameplan[robot.x][robot.y-(i+1)].robot == false) {
 									i++;
 							} else { break;}
 				}
 				if (i != 0) {				
-						gameplan[robot.placement.x][robot.placement.y].robot = false;
-						gameplan[robot.placement.x][robot.placement.y-i].robot = true;
-						robot.placement.y -= i;
+						gameplan[robot.x][robot.y].robot = false;
+						gameplan[robot.x][robot.y-i].robot = true;
+						robot.y -= i;
 						step += 1;
 						checkGoal();
 						moves.push({robot: activeRobot, movement: '40'});
 				}
 				
 		} else if ( e == '40' ) { // down arrow
-				while ( gameplan[robot.placement.x][robot.placement.y+i].bottom == true) {
-						if ((robot.placement.y + i) < (gameplan.length-1) &&
-								gameplan[robot.placement.x][robot.placement.y+(i+1)].robot == false) {
+				while ( gameplan[robot.x][robot.y+i].bottom == true) {
+						if ((robot.y + i) < (gameplan.length-1) &&
+								gameplan[robot.x][robot.y+(i+1)].robot == false) {
 								i++;
 						} else { break;}
 				}
 				if (i != 0) {
-						gameplan[robot.placement.x][robot.placement.y].robot = false;
-						gameplan[robot.placement.x][robot.placement.y+i].robot = true;
-						robot.placement.y += i;
+						gameplan[robot.x][robot.y].robot = false;
+						gameplan[robot.x][robot.y+i].robot = true;
+						robot.y += i;
 						step += 1;
 						checkGoal();
 						moves.push({robot: activeRobot, movement: '38'});
 				}
 				
 		} else if ( e == '37') { // left arrow
-				while ( gameplan[robot.placement.x-i][robot.placement.y].left == true) {
-						if ((robot.placement.x - i) > 0 &&
-								gameplan[robot.placement.x-(i+1)][robot.placement.y].robot == false) {
+				while ( gameplan[robot.x-i][robot.y].left == true) {
+						if ((robot.x - i) > 0 &&
+								gameplan[robot.x-(i+1)][robot.y].robot == false) {
 								i++;
 						} else { break;}
 				}
 				if (i != 0) {
-						gameplan[robot.placement.x][robot.placement.y].robot = false;
-						gameplan[robot.placement.x-i][robot.placement.y].robot = true;
-						robot.placement.x -= i;
+						gameplan[robot.x][robot.y].robot = false;
+						gameplan[robot.x-i][robot.y].robot = true;
+						robot.x -= i;
 						step += 1;
 						checkGoal();
 						moves.push({robot: activeRobot, movement: '39'});
 				}
 
 		} else if ( e == '39') { // right arrow
-				while ( gameplan[robot.placement.x+i][robot.placement.y].right == true) {
-						if ((robot.placement.x + i) < (gameplan.length-1) &&
-								gameplan[robot.placement.x+(i+1)][robot.placement.y].robot == false) {
+				while ( gameplan[robot.x+i][robot.y].right == true) {
+						if ((robot.x + i) < (gameplan.length-1) &&
+								gameplan[robot.x+(i+1)][robot.y].robot == false) {
 								i++;
 						} else { break;}
 				}
 
 				if (i != 0) {
-						gameplan[robot.placement.x][robot.placement.y].robot = false;
-						gameplan[robot.placement.x+i][robot.placement.y].robot = true;
-						robot.placement.x += i;
+						gameplan[robot.x][robot.y].robot = false;
+						gameplan[robot.x+i][robot.y].robot = true;
+						robot.x += i;
 						step += 1;
 						checkGoal();
 						moves.push({robot: activeRobot, movement: '37'});

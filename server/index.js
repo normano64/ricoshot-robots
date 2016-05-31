@@ -7,8 +7,9 @@ var port = process.env.PORT || 3000;
 
 var _ = require('lodash');
 var uuid = require('node-uuid');
+var rico = require('../game-logic.js');
 
-app.use(express.static(__dirname + '/static'));
+app.use(express.static(__dirname + '/webroot'));
 
 server.listen(port, function () {
     console.log('Server listening at port %d', port);
@@ -22,7 +23,9 @@ var rooms = [{
     players: [],
     drinking: false,
     turns: 0,
-    chatHistory: []
+    chatHistory: [],
+    gameBoard: [],
+    goals: []
 }];
 var users = [];
 var emptyRooms = [];
@@ -109,6 +112,7 @@ io.on('connection', function(socket) {
     /* The player wants to join a room, leaves the old room if any. */
     socket.on('create_room', function(name, isPublic, drinking) {
         if(_.findIndex(rooms, { name: name, isPublic: true }) == -1 && name && name.length <= 16 && socket.room == 'home') {
+            var map = rico.generateMap();
             /* Create room with a uuid and general game stuff. */
             var room = {
                 uuid: uuid.v4(),
@@ -117,7 +121,10 @@ io.on('connection', function(socket) {
                 players: [],
                 drinking: (drinking ? true : false),
                 turns: 0,
-                chatHistory: []
+                chatHistory: [],
+                gameBoard: map.walls,
+                robots: rico.placeRobots(map.walls),
+                goals: map.goals,
             }
             rooms.push(room);
             console.log(socket.nick + ' created ' + room.name);

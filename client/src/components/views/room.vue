@@ -1,9 +1,13 @@
 <template>
     <div id="room">
 	<div id="board">
-	    <winner-partial v-if="winnerToggle" :winner="winner" transition="right"></winner-partial>
+	    <svg class="icon" style="fill:#ff0000;color:#800000;width:24px;height:32px;"><use xlink:href="/static/sprite.svg#icon-robot"/></svg>
+	    <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
 	    <a href="#" @click.prevent="toggleWinner">test winner</a>
 	    <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
+	    <div class="map">
+                <wall-partial v-for="tile in walls" :tile="tile"></wall-partial>
+	    </div>
 	</div>
 	<a id="chatButton" href="#" class="right" @click.prevent="toggleChat">
 	    <svg class="icon" width="25" height="25"><use xlink:href="/static/sprite.svg#icon-chat"/></svg>
@@ -15,19 +19,23 @@
  import store from '../../store';
  import chatPartial from '../partials/chat.vue';
  import winnerPartial from '../partials/winner.vue';
+ import wallPartial from '../partials/wall.vue';
  
  export default {
      name: 'roomView',
      components: {
          chatPartial,
-	 winnerPartial
+	     winnerPartial,
+         wallPartial
      },
      data() {
          return {
              messages: [],
-	     winner: 'Steve',
+     	     winner: 'Steve',
 	     winnerToggle: false,
 	     chatToggle: false
+             walls: [],
+             tiles: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
          }
      },
      methods: {
@@ -39,8 +47,9 @@
 	 },
          joinedRoom(room) {
              console.log(room);
-             this.messages = room.chatHistory;
              this.$dispatch('changeTitle', 'in ' + room.name);
+             this.messages = room.chatHistory;
+             this.walls = room.gameBoard;
          },
          chatMessage(nick, message, time, isPlayer) {
              this.messages.push({
@@ -80,11 +89,11 @@
          reconnected() {
              store.emit('join_room', this.$route.params.uuid);
          },
-	 showWinnerModal() {
+	     showWinnerModal() {
              this.Modal = true;
              this.overlayClickListener = true;
              this.overlay = true;
-	 }
+	     }
      },
      attached() {
          store.emit('join_room', this.$route.params.uuid);
@@ -123,51 +132,63 @@
  }
  #board {
      width:680px;
-     height:512px;
+     /* height:512px; */
      float:left;
      position:relative;
      padding:12px;
      flex:1;
+     overflow:hidden;
      .modal {
-	 position:absolute;
-	 left:0;
-	 right:0;
-	 width:300px;
-	 margin:0 auto;
-	 top:120px;
-	 padding:12px 18px;
-	 box-shadow:0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
-	 background:white;
-	 h3 {
-	     text-align:center;
-	     font-size:2.0em;
-	 }
-	 &.top-transition {
+	     position:absolute;
+	     left:0;
+	     right:0;
+	     width:300px;
+	     margin:0 auto;
+	     top:120px;
+	     padding:12px 18px;
+	     box-shadow:0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+	     background:white;
+         z-index:50;
+	     h3 {
+	         text-align:center;
+	         font-size:2.0em;
+	     }
+	     &.top-transition {
              transition:all .3s ease;
              transform:translateY(0px);
              opacity:1;
-	 }
-	 &.top-enter, &.top-leave {
+	     }
+	     &.top-enter, &.top-leave {
              transform:translateY(-200px);
              opacity:0;
-	 }
+	     }
      }
      .overlay {
-	 position:absolute;
-	 display:block;
-	 height:120%;
-	 width:100%;
-	 top:0;
-	 left:0;
-	 background:rgba(0,0,0,.5);
-	 z-index:99;
-	 &.opacity-transition {
+	     position:absolute;
+	     display:block;
+	     height:120%;
+	     width:100%;
+	     top:0;
+	     left:0;
+	     background:rgba(0,0,0,.5);
+	     z-index:49;
+	     &.opacity-transition {
              transition:all .3s ease;
              opacity:1;
-	 }
-	 &.opacity-enter, &.opacity-leave {
+	     }
+	     &.opacity-enter, &.opacity-leave {
              opacity:0;
-	 }
+	     }
+     }
+     .map {
+         width:512px;
+         height:512px;
+         position:relative;
+     }
+     .tile {
+         width:32px;
+         height:32px;
+         float:left;
      }
      svg.icon {
          height:24px;
