@@ -122,7 +122,7 @@
  @import 'base';
 
  #app {
-     max-width:1000px;
+     max-width:1120px;
      width:100%;
      margin:18px auto;
      overflow:hidden;

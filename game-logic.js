@@ -5,115 +5,149 @@ var gamePad = [[]];
 var goals = [];
 var goal = null;
 var activeRobot = null;
-var robots = [{color: "red", placement: {x: null, y: null}}, 
-							{color: "blue", placement: {x: null, y: null}},
-							{color: "green", placement: {x: null, y: null}},
-							{color: "yellow", placement: {x: null, y: null}}];
 
 var goalsAndWalls = [
-		{
-				goals: [
-						[ {color: "red", sign: "star", placement: {x: 2, y: 5}}, {color: "yellow", sign: "cogwheel", placement: {x: 1, y: 3}}, {color: "blue", sign: "moon", placement: {x: 6, y: 1}},
-							{color: "green", sign: "planet", placement: {x: 5, y: 4}}, {color: "multi", sign: "whirlwind", placement: {x: 7, y: 5}}],
-						[ {color: "red", sign: "star", placement: {x: 2, y: 1}}, {color: "yellow", sign: "cogwheel", placement: {x: 6, y: 4}},
-							{color: "blue", sign: "moon", placement: {x: 5, y: 6}}, {color: "green", sign: "planet", placement: {x: 1, y: 3}}, {color: "multi", sign: "whirlwind", placement: {x: 3, y: 7}}]],
-				walls: [
-						[ { placement: {x: 1, y: 3}, wall: ["top", "right"], p: 0}, { placement: {x: 2, y: 5}, wall: ["bottom", "right"]}, { placement: {x: 6, y: 1}, wall: ["bottom", "left"]},
-							{ placement: {x: 5, y: 4}, wall: ["top", "left"]}, { placement: {x: 7, y: 5}, wall: ["bottom", "right"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]},
-							{ placement: {x: 3, y: 0}, wall: ["right"]}, { placement: {x: 0, y: 7}, wall: ["top"]}
-						], []
-				]},
-		{ 
-				goals: [
-						[ {color: "red", sign: "moon", placement: {x: 4, y: 1}}, {color: "green", sign: "cogwheel", placement: {x: 1, y: 2}},
-							{color: "blue", sign: "planet", placement: {x: 3, y: 6}}, {color: "yellow", sign: "star", placement: {x: 6, y: 3}}],
-						
-						[ {color: "red", sign: "moon", placement: {x: 3, y: 6}}, {color: "green", sign: "cogwheel", placement: {x: 1, y: 2}},
-							{color: "blue", sign: "planet", placement: {x: 6, y: 5}}, {color: "yellow", sign: "star", placement: {x: 6, y: 1}}]],
-				walls: [
-					[ { placement: {x: 3, y: 6}, wall: ["bottom", "left"], p: 1}, { placement: {x: 6, y: 2}, wall: ["bottom", "right"]}, { placement: {x: 4, y: 1}, wall: ["top", "left"]},
-							{ placement: {x: 1, y: 2}, wall: ["top", "right"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]}, { placement: {x: 1, y: 0}, wall: ["right"]},
-							{ placement: {x: 0, y: 5}, wall: ["bottom"]}
-						], []
-				]},
-		{
-				goals: [
-						[ {color: "red", sign: "cogwheel", placement: {x: 1, y: 1}}, {color: "blue", sign: "star", placement: {x: 2, y: 4}},
-							{color: "green", sign: "moon", placement: {x: 6, y: 2}}, {color: "yellow", sign: "planet", placement: {x: 7, y: 5}}],
-						
-						[ {color: "red", sign: "cogwheel", placement: {x: 7, y: 5}}, {color: "blue", sign: "star", placement: {x: 5, y: 2}},
-							{color: "green", sign: "moon", placement: {x: 2, y: 4}}, {color: "yellow", sign: "planet", placement: {x: 1, y: 6}}]],
-				walls: [
-					[ { placement: {x: 2, y: 4}, wall: ["bottom", "right"], p: 2}, { placement: {x: 1, y: 1}, wall: ["bottom", "left"]}, { placement: {x: 6, y: 2}, wall: ["top", "right"]},
-							{ placement: {x: 7, y: 5}, wall: ["top", "left"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]}, { placement: {x: 3, y: 0}, wall: ["right"]},
-							{ placement: {x: 0, y: 6}, wall: ["top"]}
-						], []
-				]},
-		{ 
-				goals: [
-					[ {color: "red", sign: "planet", placement: {x: 4, y: 5}}, {color: "blue", sign: "cogwheel", placement: {x: 6, y: 3}},
-						{color: "green", sign: "star", placement: {x: 1, y: 6}}, {color: "yellow", sign: "moon", placement: {x: 7, y: 3}}],
-						
-					[ {color: "red", sign: "planet", placement: {x: 1, y: 2}}, {color: "blue", sign: "cogwheel", placement: {x: 2, y: 6}},
-						{color: "green", sign: "star", placement: {x: 5, y: 1}}, {color: "yellow", sign: "moon", placement: {x: 6, y: 4}}]],
-				walls: [
-					[ { placement: {x: 6, y: 3}, wall: ["bottom", "left"], p: 3}, { placement: {x: 4, y: 5}, wall: ["top", "right"]}, { placement: {x: 2, y: 1}, wall: ["top", "left"]},
-							{ placement: {x: 1, y: 6}, wall: ["bottom", "right"]}, { placement: {x: 7, y: 7}, wall: ["top", "left"]}, { placement: {x: 4, y: 0}, wall: ["right"]},
-							{ placement: {x: 0, y: 4}, wall: ["top"]}
-						], []
-				]}];
-
-// export default goalsAndWalls;
+    {
+        goals: [[
+            { color: "red", sign: "star", x: 2, y: 5 },
+            { color: "yellow", sign: "cogwheel", x: 1, y: 3 },
+            { color: "blue", sign: "moon", x: 6, y: 1 },
+            { color: "green", sign: "planet", x: 5, y: 4 },
+            { color: "multi", sign: "whirlwind", x: 7, y: 5 }
+        ], [
+            { color: "red", sign: "star", x: 2, y: 1 },
+            { color: "yellow", sign: "cogwheel", x: 6, y: 4 },
+            { color: "blue", sign: "moon", x: 5, y: 6 },
+            { color: "green", sign: "planet", x: 1, y: 3 },
+            { color: "multi", sign: "whirlwind", x: 3, y: 7 }
+        ]],
+        walls: [[
+            { x: 1, y: 3, wall: ["top", "right"] },
+            { x: 2, y: 5, wall: ["bottom", "right"] },
+            { x: 6, y: 1, wall: ["bottom", "left"] },
+            { x: 5, y: 4, wall: ["top", "left"] },
+            { x: 7, y: 5, wall: ["bottom", "right"] },
+            { x: 7, y: 7, wall: ["top", "left"] },
+            { x: 3, y: 0, wall: ["right"] },
+            { x: 0, y: 7, wall: ["top"] }
+        ], [
+        ]]
+    }, { 
+        goals: [[
+            { color: "red", sign: "moon", x: 4, y: 1 },
+            { color: "green", sign: "cogwheel", x: 1, y: 2 },
+            { color: "blue", sign: "planet", x: 3, y: 6 },
+            { color: "yellow", sign: "star", x: 6, y: 3 }
+        ], [
+            { color: "red", sign: "moon", x: 3, y: 6},
+            { color: "green", sign: "cogwheel", x: 1, y: 2 },
+            { color: "blue", sign: "planet", x: 6, y: 5 },
+            { color: "yellow", sign: "star", x: 6, y: 1 }
+        ]],
+        walls: [[
+            { x: 3, y: 6, wall: ["bottom", "left"] },
+            { x: 6, y: 2, wall: ["bottom", "right"] },
+            { x: 4, y: 1, wall: ["top", "left"] },
+            { x: 1, y: 2, wall: ["top", "right"] },
+            { x: 7, y: 7, wall: ["top", "left"] },
+            { x: 1, y: 0, wall: ["right"] },
+            { x: 0, y: 5, wall: ["bottom"] }
+        ], [
+        ]]
+    }, {
+        goals: [[
+            { color: "red", sign: "cogwheel", x: 1, y: 1 },
+            { color: "blue", sign: "star", x: 2, y: 4 },
+            { color: "green", sign: "moon", x: 6, y: 2},
+            { color: "yellow", sign: "planet", x: 7, y: 5 }
+        ], [
+            { color: "red", sign: "cogwheel", x: 7, y: 5 },
+            { color: "blue", sign: "star", x: 5, y: 2 },
+            { color: "green", sign: "moon", x: 2, y: 4 },
+            { color: "yellow", sign: "planet", x: 1, y: 6 }
+        ]],
+        walls: [[
+            { x: 2, y: 4, wall: ["bottom", "right"] },
+            { x: 1, y: 1, wall: ["bottom", "left"] },
+            { x: 6, y: 2, wall: ["top", "right"] },
+            { x: 7, y: 5, wall: ["top", "left"] },
+            { x: 7, y: 7, wall: ["top", "left"]},
+            { x: 3, y: 0, wall: ["right"] },
+            { x: 0, y: 6, wall: ["top"] }
+        ], [
+        ]]
+    }, { 
+        goals: [[
+            { color: "red", sign: "planet", x: 4, y: 5 },
+            { color: "blue", sign: "cogwheel", x: 6, y: 3 },
+            { color: "green", sign: "star", x: 1, y: 6 },
+            { color: "yellow", sign: "moon", x: 7, y: 3 }
+        ],[
+            { color: "red", sign: "planet", x: 1, y: 2 },
+            { color: "blue", sign: "cogwheel", x: 2, y: 6 },
+            { color: "green", sign: "star", x: 5, y: 1 },
+            { color: "yellow", sign: "moon", x: 6, y: 4 }
+        ]],
+        walls: [[
+            { x: 6, y: 3, wall: ["bottom", "left"] },
+            { x: 4, y: 5, wall: ["top", "right"] },
+            { x: 2, y: 1, wall: ["top", "left"] },
+            { x: 1, y: 6, wall: ["bottom", "right"] },
+            { x: 7, y: 7, wall: ["top", "left"] },
+            { x: 4, y: 0, wall: ["right"] },
+            { x: 0, y: 4, wall: ["top"] }
+        ], [
+        ]]
+    }
+];
 
 // BYGGER ALLA VÄGGAR PÅ SPELPLANEN
 function createWalls(gamepad, walls) {
-
     walls.forEach(function(wall) {
-		if (wall == "top") {
-			gamepad[wall.x][wall.y].top = false;
-			gamepad[wall.x][wall.y-1].bottom = false;
-		}
-		if (wall == "bottom") {
-			gamepad[wall.x][wall.y].bottom = false;
-			gamepad[wall.x][wall.y+1].top = false;
-		}
-		if (wall == "right") {
-			gamepad[wall.x][wall.y].right = false;
-			gamepad[wall.x+1][wall.y].left = false;
-		}
-		if (wall == "left") {
-			gamepad[wall.x][wall.y].left = false;
-			gamepad[wall.x-1][wall.y].right = false;
-		}
-	});
-
-		return gamepad;
+        if (wall == "top") {
+            gamepad[wall.x][wall.y].top = false;
+            gamepad[wall.x][wall.y-1].bottom = false;
+        }
+        if (wall == "bottom") {
+            gamepad[wall.x][wall.y].bottom = false;
+            gamepad[wall.x][wall.y+1].top = false;
+        }
+        if (wall == "right") {
+            gamepad[wall.x][wall.y].right = false;
+            gamepad[wall.x+1][wall.y].left = false;
+        }
+        if (wall == "left") {
+            gamepad[wall.x][wall.y].left = false;
+            gamepad[wall.x-1][wall.y].right = false;
+        }
+    });
+    return gamepad;
 }
 
 // BYGGER UPP GRUNDEN MED YTTERVÄGGAR
 function makePad() {
-		var n = 16;
+    var n = 16;
 
-		for (var i = 0; i < n; i++) {
-				gamePad[i] = [];
+    for (var i = 0; i < n; i++) {
+        gamePad[i] = [];
 
-				for (var j = 0; j < n; j++) {
-					gamePad[i][j] = {
-                        top: true,
-                        right: true,
-                        bottom: true,
-                        left: true,
-                        robot: false
-                    };
+        for (var j = 0; j < n; j++) {
+            gamePad[i][j] = {
+                top: true,
+                right: true,
+                bottom: true,
+                left: true,
+                robot: false
+            };
 
-						if (i == 0)  gamePad[i][j].left = false;
-						if (i == 15) gamePad[i][j].right = false;
-						if (j == 0)  gamePad[i][j].top = false;
-						if (j == 15) gamePad[i][j].bottom = false;
-				}
-		}
-		
-		return gamePad;
+            if (i == 0)  gamePad[i][j].left = false;
+            if (i == 15) gamePad[i][j].right = false;
+            if (j == 0)  gamePad[i][j].top = false;
+            if (j == 15) gamePad[i][j].bottom = false;
+        }
+    }
+
+    return gamePad;
 }
 
 // VRIDER VÄGGARNA
@@ -140,8 +174,8 @@ function twistWalls(pads) {
                     }
                 });
                 rotatedWalls.push({
-                    x: 15 - tile.placement.y,
-                    y: tile.placement.x,
+                    x: 15 - tile.y,
+                    y: tile.x,
                     walls: walls
                 });
             });
@@ -165,8 +199,8 @@ function twistWalls(pads) {
                     }
                 });
                 rotatedWalls.push({
-                    x: 15 - tile.placement.x,
-                    y: 15 - tile.placement.y,
+                    x: 15 - tile.x,
+                    y: 15 - tile.y,
                     walls: walls
                 });
             });
@@ -190,8 +224,8 @@ function twistWalls(pads) {
                     }
                 });
                 rotatedWalls.push({
-                    x: tile.placement.y,
-                    y: 15 - tile.placement.x,
+                    x: tile.y,
+                    y: 15 - tile.x,
                     walls: walls
                 });
             });
@@ -199,8 +233,8 @@ function twistWalls(pads) {
             pad.forEach(function(tile) {
                 console.log(tile);
                 rotatedWalls.push({
-                    x: tile.placement.x,
-                    y: tile.placement.y,
+                    x: tile.x,
+                    y: tile.y,
                     walls: tile.wall
                 });
             });
@@ -213,22 +247,22 @@ function twistWalls(pads) {
 function twistGoals(goals) {
 		
 		for (var i = 0; i < goals[1].length; i++) {
-				tmpy = goals[1][i].placement.y;
-				goals[1][i].placement.y = goals[1][i].placement.x;
-				goals[1][i].placement.x = 15 - tmpy;
+				tmpy = goals[1][i].y;
+				goals[1][i].y = goals[1][i].x;
+				goals[1][i].x = 15 - tmpy;
 		}
 
 		for (var i = 0; i < goals[2].length; i++) {
-				tmpx = goals[2][i].placement.x;
-				goals[2][i].placement.x = goals[2][i].placement.y;
-				goals[2][i].placement.y = 15 - tmpx;
+				tmpx = goals[2][i].x;
+				goals[2][i].x = goals[2][i].y;
+				goals[2][i].y = 15 - tmpx;
 		}
 
 		for (var i = 0; i < goals[3].length; i++) {
-				tmpy = goals[3][i].placement.x;
-				tmpx = goals[3][i].placement.y;
-				goals[3][i].placement.x = 15 - tmpy;
-				goals[3][i].placement.y = 15 - tmpx;
+				tmpy = goals[3][i].x;
+				tmpx = goals[3][i].y;
+				goals[3][i].x = 15 - tmpy;
+				goals[3][i].y = 15 - tmpx;
 		}
 
 		return goals[0].concat(goals[1], goals[2], goals[3]);
@@ -240,7 +274,8 @@ module.exports.placeRobots = function placeRobots() {
         { color: "red", x: null, y: null },
 		{ color: "blue", x: null, y: null },
 		{ color: "green", x: null, y: null },
-		{ color: "yellow", x: null, y: null }];
+		{ color: "yellow", x: null, y: null }
+    ];
 
 	for(var i = 0; i < robots.length; i++) {
         while(true) {
@@ -302,7 +337,7 @@ function chooseGoal() {
 		goal = goals[gnr];
 		goals.splice(gnr, 1);
 		console.log("Goal: " + goal.color + " " + goal.sign +
-								" at x: " + goal.placement.x + " y: "+ goal.placement.y);
+								" at x: " + goal.x + " y: "+ goal.y);
 }
 
 
@@ -312,12 +347,12 @@ function checkGoal() {
 				console.log("Robot: " + activeRobot.color);
 				console.log("Goal: " + JSON.stringify(goal));
 				if (activeRobot.color == goal.color) {
-						if (activeRobot.placement.x == goal.placement.x &&
-								activeRobot.placement.y == goal.placement.y) { moves = []; chooseGoal();}
+						if (activeRobot.x == goal.x &&
+								activeRobot.y == goal.y) { moves = []; chooseGoal();}
 				}
 		} else {
-				if (activeRobot.placement.x == goal.placement.x &&
-						activeRobot.placement.y == goal.placement.y) { moves = []; chooseGoal();}
+				if (activeRobot.x == goal.x &&
+						activeRobot.y == goal.y) { moves = []; chooseGoal();}
 		}
 }
 

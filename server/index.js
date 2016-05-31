@@ -25,6 +25,7 @@ var rooms = [{
     turns: 0,
     chatHistory: [],
     gameBoard: [],
+    robots: [],
     goals: []
 }];
 var users = [];
@@ -32,10 +33,12 @@ var emptyRooms = [];
 
 /* Save the cookie value. */
 io.use(function(socket, next) {
-    var cookie = cookieParser.parse(socket.request.headers.cookie);
-    var nick = (cookie.rsrnick ? decodeURIComponent(cookie.rsrnick) : null);
-    if(nick && nick.length <= 16) {
-        socket.nick = nick;
+    if(socket.request.headers.cookie) {
+        var cookie = cookieParser.parse(socket.request.headers.cookie);
+        var nick = (cookie.rsrnick ? decodeURIComponent(cookie.rsrnick) : null);
+        if(nick && nick.length <= 16) {
+            socket.nick = nick;
+        }
     }
     next();
 });
@@ -80,7 +83,22 @@ io.on('connection', function(socket) {
                 console.log(socket.nick + ' left ' + oldRoomName  + ' and joined ' + rooms[roomIndex].name);
                 rooms[roomIndex].players.push(socket.id.substr(2));
 
-                socket.emit('joined_room', rooms[roomIndex]);
+                var players = [];
+                rooms[roomIndex].players.forEach((id, index) => {
+                    console.log(index, _.find(users, { id: id }));
+                    players.push(_.find(users, { id: id }).nick);
+                });
+                socket.emit('joined_room', {
+                    uuid: rooms[roomIndex].uuid,
+                    name: rooms[roomIndex].name,
+                    players: players,
+                    drinking: rooms[roomIndex].drinking,
+                    turns: rooms[roomIndex].turns,
+                    chatHistory: rooms[roomIndex].chatHistory,
+                    gameBoard: rooms[roomIndex].gameBoard,
+                    robots: rooms[roomIndex].robots,
+                    goals: rooms[roomIndex].goals
+                });
 
                 if(socket.room != 'home') {
                     var time = (new Date()).getTime();

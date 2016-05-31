@@ -1,5 +1,5 @@
 <template>
-    <svg class="icon wall" :attr="'x' + tile.x + 'y' + tile.y" :style="{ left: tile.x * 32 + 'px', top: tile.y * 32 + 'px', transform: 'rotate(' + rotation + 'deg)' }">
+    <svg class="icon wall" :style="{ left: tile.x * 32 + 3 + 'px', top: tile.y * 32 + 3 + 'px', transform: 'rotate(' + rotation + 'deg)' }">
         <use :xlink:href="'/static/sprite.svg#icon-' + icon"/>
     </svg>
 </template>
@@ -64,5 +64,6 @@
      width:38px;
      height:38px;
      margin:-3px 0 0 -3px;
+     fill:#757575;
  }
 </style>

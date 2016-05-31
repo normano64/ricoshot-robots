@@ -1,30 +1,44 @@
 <template>
-    <div>
-	    <div id="board">
-            <svg class="icon" style="fill:#ff0000;color:#800000;width:24px;height:32px;"><use xlink:href="/static/sprite.svg#icon-robot"/></svg>
-	        <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
-	        <a href="#" @click.prevent="toggleWinner">test winner</a>
+    <div id="board">
+        <table class="nicklist">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Wins</th>
+                    <th>Moves</th>
+                </tr>
+            </thead>
+            <tr v-for="player in players">
+                <td>{{ player.nick }}</td>
+                <td>{{ player.wins }}</td>
+                <td>{{ player.moves }}</td>
+            </tr>
+        </table>
+        <div class="map">
+            <wall-partial v-for="tile in walls" :tile="tile"></wall-partial>
+            <robot-partial v-for="robot in robots" :robot="robot"></robot-partial>
 	        <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
-            <div class="map">
-                <wall-partial v-for="tile in walls" :tile="tile"></wall-partial>
-            </div>
-	    </div>
+	        <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
+        </div>
 	    <chat-partial :messages="messages"></chat-partial>
     </div>
 </template>
 
 <script>
+ import _ from 'lodash';
  import store from '../../store';
  import chatPartial from '../partials/chat.vue';
  import winnerPartial from '../partials/winner.vue';
  import wallPartial from '../partials/wall.vue';
+ import robotPartial from '../partials/robot.vue';
  
  export default {
      name: 'roomView',
      components: {
          chatPartial,
 	     winnerPartial,
-         wallPartial
+         wallPartial,
+         robotPartial
      },
      data() {
          return {
@@ -32,7 +46,8 @@
 	         winner: 'Steve',
 	         winnerToggle: false,
              walls: [],
-             tiles: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+             robots: [],
+             players: []
          }
      },
      methods: {
@@ -44,6 +59,15 @@
              this.$dispatch('changeTitle', 'in ' + room.name);
              this.messages = room.chatHistory;
              this.walls = room.gameBoard;
+             this.robots = room.robots;
+             this.players = [];
+             room.players.forEach((nick) => {
+                 this.players.push({
+                     nick: nick,
+                     wins: 0,
+                     moves: null
+                 });
+             });
          },
          chatMessage(nick, message, time, isPlayer) {
              this.messages.push({
@@ -54,6 +78,13 @@
              });
          },
          playerJoined(nick, time) {
+             if(_.findIndex(this.players, { nick: nick }) == -1) {
+                 this.players.push({
+                     nick: nick,
+                     wins: 0,
+                     moves: null
+                 });
+             }
              this.messages.push({
                  nick: null,
                  message: 'joined_room',
@@ -63,6 +94,7 @@
              });
          },
          playerLeft(nick, time) {
+             this.players.splice(_.findIndex(this.players, { nick: nick }), 1);
              this.messages.push({
                  nick: null,
                  message: 'left_room',
@@ -72,6 +104,7 @@
              });
          },
          playerChangedNick(oldNick, newNick, time) {
+             this.players[_.findIndex(this.players, { nick: oldNick })].nick = newNick;
              this.messages.push({
                  nick: null,
                  message: 'changed_nick',
@@ -115,12 +148,14 @@
  @import 'mixin';
  
  #board {
-     width:680px;
+     /* width:680px; */
      /* height:512px; */
-     float:left;
+     /* float:left; */
      position:relative;
      padding:12px;
      overflow:hidden;
+     display:flex;
+     justify-content:space-between;
      .modal {
 	     position:absolute;
 	     left:0;
@@ -146,10 +181,13 @@
              opacity:0;
 	     }
      }
+     .nicklist {
+         width:277px;
+     }
      .overlay {
 	     position:absolute;
 	     display:block;
-	     height:120%;
+	     height:100%;
 	     width:100%;
 	     top:0;
 	     left:0;
@@ -164,14 +202,14 @@
 	     }
      }
      .map {
-         width:512px;
-         height:512px;
+         width:518px;
+         height:518px;
          position:relative;
+         background:url('/static/map.png');
      }
-     .tile {
-         width:32px;
-         height:32px;
-         float:left;
+     #chat {
+         width:277px;
+         height:518px;
      }
  }
  

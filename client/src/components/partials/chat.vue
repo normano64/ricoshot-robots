@@ -1,6 +1,5 @@
 <template>
     <div id="chat">
-        <h2>{{ t('chat') }}</h2>
         <div v-el:chat class="content">
             <ul>
                 <chat-message-partial v-for="message in messages" :message="message"></chat-message-partial>
@@ -58,17 +57,15 @@
  @import 'mixin';
 
  #chat {
-     width:320px;
-     height:512px;
-     padding:12px;
-     float:right;
+     display:flex;
+     flex-flow:column;
      h2 {
          text-align:center;
      }
      .content {
-         height:414px;
          border:1px solid $gray-light;
          overflow:auto;
+         flex:1;
      }
      ul {
          min-height:100%;
