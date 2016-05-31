@@ -61,7 +61,13 @@
      width:320px;
      height:512px;
      padding:12px;
-     float:right;
+     position:absolute;
+     right: 0;
+     transition:transform .3s ease;
+     &.show {
+	 transform:translateX(320px);
+	 
+     }
      h2 {
          text-align:center;
      }

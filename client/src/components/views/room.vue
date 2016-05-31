@@ -1,14 +1,16 @@
 <template>
-    <div>
+    <div id="room">
 	<div id="board">
-	    <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
+	    <winner-partial v-if="winnerToggle" :winner="winner" transition="right"></winner-partial>
 	    <a href="#" @click.prevent="toggleWinner">test winner</a>
 	    <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
 	</div>
-	<chat-partial :messages="messages"></chat-partial>
+	<a id="chatButton" href="#" class="right" @click.prevent="toggleChat">
+	    <svg class="icon" width="25" height="25"><use xlink:href="/static/sprite.svg#icon-chat"/></svg>
+	</a>
+	<chat-partial :class="{ 'show':chatToggle }" :messages="messages"></chat-partial>
     </div>
 </template>
-
 <script>
  import store from '../../store';
  import chatPartial from '../partials/chat.vue';
@@ -24,11 +26,14 @@
          return {
              messages: [],
 	     winner: 'Steve',
-	     winnerToggle: false
+	     winnerToggle: false,
+	     chatToggle: false
          }
      },
      methods: {
-
+	 toggleChat() {
+	     this.chatToggle = !this.chatToggle;
+	 },
 	 toggleWinner() {
 	     this.winnerToggle = !this.winnerToggle;
 	 },
@@ -105,13 +110,24 @@
 <style lang="sass">
  @import "variables";
  @import 'mixin';
- 
+
+ #chatButton {
+     z-index: +1;
+ }
+
+ #room {
+     display:flex;
+     justify-content:center;
+     position:relative;
+     overflow:hidden;
+ }
  #board {
      width:680px;
      height:512px;
      float:left;
      position:relative;
      padding:12px;
+     flex:1;
      .modal {
 	 position:absolute;
 	 left:0;
@@ -153,6 +169,15 @@
              opacity:0;
 	 }
      }
+     svg.icon {
+         height:24px;
+         width:24px;
+         fill:white;
+         margin:15px 0;
+         &.language {
+             margin-left:8px;
+             cursor:pointer;
+         }
+     }
  }
- 
 </style>
