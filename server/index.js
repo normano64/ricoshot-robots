@@ -24,9 +24,10 @@ var rooms = [{
     drinking: false,
     turns: 0,
     chatHistory: [],
-    gameBoard: [],
+    walls: [],
     robots: [],
-    goals: []
+    goals: [],
+    board: []
 }];
 var users = [];
 var emptyRooms = [];
@@ -95,9 +96,10 @@ io.on('connection', function(socket) {
                     drinking: rooms[roomIndex].drinking,
                     turns: rooms[roomIndex].turns,
                     chatHistory: rooms[roomIndex].chatHistory,
-                    gameBoard: rooms[roomIndex].gameBoard,
+                    walls: rooms[roomIndex].walls,
                     robots: rooms[roomIndex].robots,
-                    goals: rooms[roomIndex].goals
+                    goals: rooms[roomIndex].goals,
+                    board: rooms[roomIndex].board,
                 });
 
                 if(socket.room != 'home') {
@@ -131,6 +133,7 @@ io.on('connection', function(socket) {
     socket.on('create_room', function(name, isPublic, drinking) {
         if(_.findIndex(rooms, { name: name, isPublic: true }) == -1 && name && name.length <= 16 && socket.room == 'home') {
             var map = rico.generateMap();
+            /* console.log(map.board); */
             /* Create room with a uuid and general game stuff. */
             var room = {
                 uuid: uuid.v4(),
@@ -140,9 +143,10 @@ io.on('connection', function(socket) {
                 drinking: (drinking ? true : false),
                 turns: 0,
                 chatHistory: [],
-                gameBoard: map.walls,
+                walls: map.walls,
                 robots: rico.placeRobots(map.walls),
                 goals: map.goals,
+                board: map.board
             }
             rooms.push(room);
             console.log(socket.nick + ' created ' + room.name);

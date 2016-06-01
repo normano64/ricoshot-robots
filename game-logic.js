@@ -10,13 +10,13 @@ var goalsAndWalls = [
     {
         goals: [[
             { color: "red", sign: "star", x: 2, y: 5 },
-            { color: "yellow", sign: "cogwheel", x: 1, y: 3 },
+            { color: "yellow", sign: "cog", x: 1, y: 3 },
             { color: "blue", sign: "moon", x: 6, y: 1 },
             { color: "green", sign: "planet", x: 5, y: 4 },
             { color: "multi", sign: "whirlwind", x: 7, y: 5 }
         ], [
             { color: "red", sign: "star", x: 2, y: 1 },
-            { color: "yellow", sign: "cogwheel", x: 6, y: 4 },
+            { color: "yellow", sign: "cog", x: 6, y: 4 },
             { color: "blue", sign: "moon", x: 5, y: 6 },
             { color: "green", sign: "planet", x: 1, y: 3 },
             { color: "multi", sign: "whirlwind", x: 3, y: 7 }
@@ -35,18 +35,18 @@ var goalsAndWalls = [
     }, { 
         goals: [[
             { color: "red", sign: "moon", x: 4, y: 1 },
-            { color: "green", sign: "cogwheel", x: 1, y: 2 },
+            { color: "green", sign: "cog", x: 1, y: 2 },
             { color: "blue", sign: "planet", x: 3, y: 6 },
             { color: "yellow", sign: "star", x: 6, y: 3 }
         ], [
             { color: "red", sign: "moon", x: 3, y: 6},
-            { color: "green", sign: "cogwheel", x: 1, y: 2 },
+            { color: "green", sign: "cog", x: 1, y: 2 },
             { color: "blue", sign: "planet", x: 6, y: 5 },
             { color: "yellow", sign: "star", x: 6, y: 1 }
         ]],
         walls: [[
             { x: 3, y: 6, wall: ["bottom", "left"] },
-            { x: 6, y: 2, wall: ["bottom", "right"] },
+            { x: 6, y: 3, wall: ["bottom", "right"] },
             { x: 4, y: 1, wall: ["top", "left"] },
             { x: 1, y: 2, wall: ["top", "right"] },
             { x: 7, y: 7, wall: ["top", "left"] },
@@ -56,12 +56,12 @@ var goalsAndWalls = [
         ]]
     }, {
         goals: [[
-            { color: "red", sign: "cogwheel", x: 1, y: 1 },
+            { color: "red", sign: "cog", x: 1, y: 1 },
             { color: "blue", sign: "star", x: 2, y: 4 },
             { color: "green", sign: "moon", x: 6, y: 2},
             { color: "yellow", sign: "planet", x: 7, y: 5 }
         ], [
-            { color: "red", sign: "cogwheel", x: 7, y: 5 },
+            { color: "red", sign: "cog", x: 7, y: 5 },
             { color: "blue", sign: "star", x: 5, y: 2 },
             { color: "green", sign: "moon", x: 2, y: 4 },
             { color: "yellow", sign: "planet", x: 1, y: 6 }
@@ -79,12 +79,12 @@ var goalsAndWalls = [
     }, { 
         goals: [[
             { color: "red", sign: "planet", x: 4, y: 5 },
-            { color: "blue", sign: "cogwheel", x: 6, y: 3 },
+            { color: "blue", sign: "cog", x: 6, y: 3 },
             { color: "green", sign: "star", x: 1, y: 6 },
-            { color: "yellow", sign: "moon", x: 7, y: 3 }
+            { color: "yellow", sign: "moon", x: 2, y: 1 }
         ],[
             { color: "red", sign: "planet", x: 1, y: 2 },
-            { color: "blue", sign: "cogwheel", x: 2, y: 6 },
+            { color: "blue", sign: "cog", x: 2, y: 6 },
             { color: "green", sign: "star", x: 5, y: 1 },
             { color: "yellow", sign: "moon", x: 6, y: 4 }
         ]],
@@ -103,23 +103,25 @@ var goalsAndWalls = [
 
 // BYGGER ALLA VÄGGAR PÅ SPELPLANEN
 function createWalls(gamepad, walls) {
-    walls.forEach(function(wall) {
-        if (wall == "top") {
-            gamepad[wall.x][wall.y].top = false;
-            gamepad[wall.x][wall.y-1].bottom = false;
-        }
-        if (wall == "bottom") {
-            gamepad[wall.x][wall.y].bottom = false;
-            gamepad[wall.x][wall.y+1].top = false;
-        }
-        if (wall == "right") {
-            gamepad[wall.x][wall.y].right = false;
-            gamepad[wall.x+1][wall.y].left = false;
-        }
-        if (wall == "left") {
-            gamepad[wall.x][wall.y].left = false;
-            gamepad[wall.x-1][wall.y].right = false;
-        }
+    walls.forEach(function(tile) {
+        tile.walls.forEach(function(wall) {
+            if (wall == "top") {
+                gamepad[tile.x][tile.y].top = false;
+                gamepad[tile.x][tile.y-1].bottom = false;
+            }
+            if (wall == "bottom") {
+                gamepad[tile.x][tile.y].bottom = false;
+                gamepad[tile.x][tile.y+1].top = false;
+            }
+            if (wall == "right") {
+                gamepad[tile.x][tile.y].right = false;
+                gamepad[tile.x+1][tile.y].left = false;
+            }
+            if (wall == "left") {
+                gamepad[tile.x][tile.y].left = false;
+                gamepad[tile.x-1][tile.y].right = false;
+            }
+        });
     });
     return gamepad;
 }
@@ -136,8 +138,7 @@ function makePad() {
                 top: true,
                 right: true,
                 bottom: true,
-                left: true,
-                robot: false
+                left: true
             };
 
             if (i == 0)  gamePad[i][j].left = false;
@@ -253,17 +254,17 @@ function twistGoals(goals) {
 		}
 
 		for (var i = 0; i < goals[2].length; i++) {
-				tmpx = goals[2][i].x;
-				goals[2][i].x = goals[2][i].y;
+				tmpy = goals[2][i].x;
+				tmpx = goals[2][i].y;
+				goals[2][i].x = 15 - tmpy;
 				goals[2][i].y = 15 - tmpx;
 		}
 
-		for (var i = 0; i < goals[3].length; i++) {
-				tmpy = goals[3][i].x;
-				tmpx = goals[3][i].y;
-				goals[3][i].x = 15 - tmpy;
-				goals[3][i].y = 15 - tmpx;
-		}
+	for (var i = 0; i < goals[3].length; i++) {
+		tmpx = goals[3][i].x;
+		goals[3][i].x = goals[3][i].y;
+		goals[3][i].y = 15 - tmpx;
+	}
 
 		return goals[0].concat(goals[1], goals[2], goals[3]);
 }
@@ -322,11 +323,9 @@ module.exports.generateMap = function generateMap() {
 	gameWalls = twistWalls(gameWalls);
 
 	// ANROPAR createWalls SOM SKAPAR ALLA VÄGGAR PÅ SPELPLANEN
-	for (var i = 0; i < gameWalls.length; i++) {
-        gameBoard = createWalls(gameBoard, gameWalls);
-    }
+    gameBoard = createWalls(gameBoard, gameWalls);
 
-	return { goals: gameGoals, walls: gameWalls };
+	return { goals: gameGoals, walls: gameWalls, board: gameBoard };
 }
 
 // VÄLJER VILKET MÅL SOM KOMMER HÄR NÄST
@@ -378,81 +377,6 @@ function redo() {
 
 // gamePad = primGame();
 //gamePad = game();
-
-function move(gameplan, e, robot) {
-		var i = 0;
-
-		// robot = activeRobot;
-		
-		if ( e == '38' ) { // up arrow
-				while (gameplan[robot.x][robot.y-i].top == true) {
-							if ((robot.y - i) > 0 &&
-									gameplan[robot.x][robot.y-(i+1)].robot == false) {
-									i++;
-							} else { break;}
-				}
-				if (i != 0) {				
-						gameplan[robot.x][robot.y].robot = false;
-						gameplan[robot.x][robot.y-i].robot = true;
-						robot.y -= i;
-						step += 1;
-						checkGoal();
-						moves.push({robot: activeRobot, movement: '40'});
-				}
-				
-		} else if ( e == '40' ) { // down arrow
-				while ( gameplan[robot.x][robot.y+i].bottom == true) {
-						if ((robot.y + i) < (gameplan.length-1) &&
-								gameplan[robot.x][robot.y+(i+1)].robot == false) {
-								i++;
-						} else { break;}
-				}
-				if (i != 0) {
-						gameplan[robot.x][robot.y].robot = false;
-						gameplan[robot.x][robot.y+i].robot = true;
-						robot.y += i;
-						step += 1;
-						checkGoal();
-						moves.push({robot: activeRobot, movement: '38'});
-				}
-				
-		} else if ( e == '37') { // left arrow
-				while ( gameplan[robot.x-i][robot.y].left == true) {
-						if ((robot.x - i) > 0 &&
-								gameplan[robot.x-(i+1)][robot.y].robot == false) {
-								i++;
-						} else { break;}
-				}
-				if (i != 0) {
-						gameplan[robot.x][robot.y].robot = false;
-						gameplan[robot.x-i][robot.y].robot = true;
-						robot.x -= i;
-						step += 1;
-						checkGoal();
-						moves.push({robot: activeRobot, movement: '39'});
-				}
-
-		} else if ( e == '39') { // right arrow
-				while ( gameplan[robot.x+i][robot.y].right == true) {
-						if ((robot.x + i) < (gameplan.length-1) &&
-								gameplan[robot.x+(i+1)][robot.y].robot == false) {
-								i++;
-						} else { break;}
-				}
-
-				if (i != 0) {
-						gameplan[robot.x][robot.y].robot = false;
-						gameplan[robot.x+i][robot.y].robot = true;
-						robot.x += i;
-						step += 1;
-						checkGoal();
-						moves.push({robot: activeRobot, movement: '37'});
-				}
-		}
-		
-		console.log("Robot: " + JSON.stringify(robot));
-		console.log("Robots: " + JSON.stringify(robots));
-}
 
 function checkKey(e) {
 		e = e || window.event;

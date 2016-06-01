@@ -15,13 +15,11 @@
             </tr>
         </table>
         <div class="map">
-						<canvas-partial :walls="walls" :goals="goals" :robots="robots">
-						</canvas-partial>
-
-	        <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
-	        <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
+            <canvas-partial :walls="walls" :goals="goals" :robots="robots" :board="board"></canvas-partial>
+            <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
+            <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
         </div>
-	    <chat-partial :class="{ 'show': chatToggle }" :messages="messages"></chat-partial>
+        <chat-partial :class="{ 'show': chatToggle }" :messages="messages"></chat-partial>
     </div>
 </template>
 <script>
@@ -29,45 +27,43 @@
  import store from '../../store';
  import chatPartial from '../partials/chat.vue';
  import winnerPartial from '../partials/winner.vue';
- import wallPartial from '../partials/wall.vue';
- import robotPartial from '../partials/robot.vue';
  import canvasPartial from '../partials/canvas.vue';
- 
+
  export default {
      name: 'roomView',
      components: {
          chatPartial,
-				 winnerPartial,
-         wallPartial,
-         robotPartial,
-				 canvasPartial
+         winnerPartial,
+         canvasPartial
      },
      data() {
          return {
              messages: [],
-     				 winner: 'Steve',
-						 winnerToggle: false,
-						 chatToggle: false,
+             winner: 'Steve',
+             winnerToggle: false,
+             chatToggle: false,
              walls: [],
-						 goals: [],
+             goals: [],
              robots: [],
-             players: []
+             players: [],
+             board: []
          }
      },
      methods: {
-	     toggleChat() {
-	         this.chatToggle = !this.chatToggle;
-	     },
-	     toggleWinner() {
-	         this.winnerToggle = !this.winnerToggle;
-	     },
+         toggleChat() {
+             this.chatToggle = !this.chatToggle;
+         },
+         toggleWinner() {
+             this.winnerToggle = !this.winnerToggle;
+         },
          joinedRoom(room) {
              console.log(room);
              this.$dispatch('changeTitle', 'in ' + room.name);
              this.messages = room.chatHistory;
-             this.walls = room.gameBoard;
-						 this.goals = room.goals;
+             this.walls = room.walls;
+             this.goals = room.goals;
              this.robots = room.robots;
+             this.board = room.board;
              this.players = [];
              room.players.forEach((nick) => {
                  this.players.push({
@@ -76,10 +72,6 @@
                      moves: null
                  });
              });
-						 this.$nextTick(function(){
-								 store.event.emit("drawWalls");
-								 store.event.emit("re_draw");
-						 });
          },
          chatMessage(nick, message, time, isPlayer) {
              this.messages.push({
@@ -128,11 +120,11 @@
          reconnected() {
              store.emit('join_room', this.$route.params.uuid);
          },
-	     showWinnerModal() {
+         showWinnerModal() {
              this.Modal = true;
              this.overlayClickListener = true;
              this.overlay = true;
-	     }
+         }
      },
      attached() {
          store.emit('join_room', this.$route.params.uuid);
@@ -215,7 +207,7 @@
      }
      .map {
          width:518px;
-         height:518px;
+         height:558px;
          position:relative;
      }
      #chat {
