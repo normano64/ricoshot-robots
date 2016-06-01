@@ -1,7 +1,6 @@
 <template>
     <canvas v-el:canvas height="518" width="518"></canvas>
-    <robot-partial v-for="robot in robots" :robot="robot" @click="markRobot(robot.color)" :class="{ marked: markedRobot == robot.color }"></robot-partial>
-    <img src="/static/images/robot_marked.png" alt="marked" v-if="markedRobot" class="marker" :style="markerPosition()"/>
+    <robot-partial v-for="robot in robots" :robot="robot" @click="markRobot(robot.color)" :class="{ marked: markedRobot == robot.color }" :marked="markedRobot == robot.color"></robot-partial>
     <div id="controls">
         <div @click="move('left')"><svg class="icon"><use xlink:href="/static/sprite.svg#icon-arrow-left"/></svg></div>
         <div @click="move('up')"><svg class="icon"><use xlink:href="/static/sprite.svg#icon-arrow-up"/></svg></div>
@@ -65,14 +64,6 @@
                     this.markedRobot = null;
                 } else {
                     this.markedRobot = robot
-                }
-            },
-            markerPosition() {
-                if(this.markedRobot != null) {
-                var robot = _.find(this.robots, { color: this.markedRobot });
-                    return { left: (robot.x*32)+5 + 'px', top: (robot.y*32)-6 + 'px' };
-                } else {
-                    return {};
                 }
             },
             move(direction) {
@@ -178,13 +169,6 @@
     canvas {
         height: 518px;
         width: 518px;
-    }
-    .marker {
-        position:absolute;
-        width:28px;
-        height:35px;
-        z-index:1;
-        /* transition:all .3s ease; */
     }
     #controls {
         display:flex;
