@@ -15,8 +15,9 @@
             </tr>
         </table>
         <div class="map">
-            <wall-partial v-for="tile in walls" :tile="tile"></wall-partial>
-            <robot-partial v-for="robot in robots" :robot="robot"></robot-partial>
+						<canvas-partial :walls="walls" :goals="goals" :robots="robots">
+						</canvas-partial>
+
 	        <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
 	        <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
         </div>
@@ -30,22 +31,25 @@
  import winnerPartial from '../partials/winner.vue';
  import wallPartial from '../partials/wall.vue';
  import robotPartial from '../partials/robot.vue';
+ import canvasPartial from '../partials/canvas.vue';
  
  export default {
      name: 'roomView',
      components: {
          chatPartial,
-	     winnerPartial,
+				 winnerPartial,
          wallPartial,
-         robotPartial
+         robotPartial,
+				 canvasPartial
      },
      data() {
          return {
              messages: [],
-     	     winner: 'Steve',
-	         winnerToggle: false,
-	         chatToggle: false,
+     				 winner: 'Steve',
+						 winnerToggle: false,
+						 chatToggle: false,
              walls: [],
+						 goals: [],
              robots: [],
              players: []
          }
@@ -62,6 +66,7 @@
              this.$dispatch('changeTitle', 'in ' + room.name);
              this.messages = room.chatHistory;
              this.walls = room.gameBoard;
+						 this.goals = room.goals;
              this.robots = room.robots;
              this.players = [];
              room.players.forEach((nick) => {
@@ -71,6 +76,10 @@
                      moves: null
                  });
              });
+						 this.$nextTick(function(){
+								 store.event.emit("drawWalls");
+								 store.event.emit("re_draw");
+						 });
          },
          chatMessage(nick, message, time, isPlayer) {
              this.messages.push({
@@ -208,7 +217,6 @@
          width:518px;
          height:518px;
          position:relative;
-         background:url('/static/map.png');
      }
      #chat {
          width:277px;
