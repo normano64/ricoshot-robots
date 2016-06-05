@@ -7,7 +7,7 @@ var port = process.env.PORT || 3000;
 
 var _ = require('lodash');
 var uuid = require('node-uuid');
-var rico = require('../game-logic.js');
+var rico = require('./game-logic.js');
 
 app.use(express.static(__dirname + '/webroot'));
 
