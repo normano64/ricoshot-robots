@@ -246,27 +246,37 @@ function twistWalls(pads) {
 
 // VRIDER MÅLEN
 function twistGoals(goals) {
-		
-		for (var i = 0; i < goals[1].length; i++) {
-				tmpy = goals[1][i].y;
-				goals[1][i].y = goals[1][i].x;
-				goals[1][i].x = 15 - tmpy;
-		}
+    var rotatedGoals = goals[0].slice();
 
-		for (var i = 0; i < goals[2].length; i++) {
-				tmpy = goals[2][i].x;
-				tmpx = goals[2][i].y;
-				goals[2][i].x = 15 - tmpy;
-				goals[2][i].y = 15 - tmpx;
-		}
+	goals[1].forEach(function(goal) {
+        rotatedGoals.push({
+            x: 15 - goal.y,
+            y: goal.x,
+            sign: goal.sign,
+            color: goal.color
+        });
+    });
+    console.log(rotatedGoals);
 
-	for (var i = 0; i < goals[3].length; i++) {
-		tmpx = goals[3][i].x;
-		goals[3][i].x = goals[3][i].y;
-		goals[3][i].y = 15 - tmpx;
-	}
+    goals[2].forEach(function(goal) {
+        rotatedGoals.push({
+            x: 15 - goal.x,
+            y: 15 - goal.y,
+            sign: goal.sign,
+            color: goal.color
+        });
+    });
 
-		return goals[0].concat(goals[1], goals[2], goals[3]);
+    goals[3].forEach(function(goal) {
+        rotatedGoals.push({
+            x: goal.y,
+            y: 15 - goal.x,
+            sign: goal.sign,
+            color: goal.color
+        });
+    });
+
+    return rotatedGoals;
 }
 
 // PLACERAR UT ROBOTORNA 
@@ -337,22 +347,6 @@ function chooseGoal() {
 		goals.splice(gnr, 1);
 		console.log("Goal: " + goal.color + " " + goal.sign +
 								" at x: " + goal.x + " y: "+ goal.y);
-}
-
-
-// KOLLAR OM ROBOTEN ÄR I DET RÄTTA MÅLET
-function checkGoal() {
-		if (goal.color != "multi") {
-				console.log("Robot: " + activeRobot.color);
-				console.log("Goal: " + JSON.stringify(goal));
-				if (activeRobot.color == goal.color) {
-						if (activeRobot.x == goal.x &&
-								activeRobot.y == goal.y) { moves = []; chooseGoal();}
-				}
-		} else {
-				if (activeRobot.x == goal.x &&
-						activeRobot.y == goal.y) { moves = []; chooseGoal();}
-		}
 }
 
 // UNDO FUNKTION

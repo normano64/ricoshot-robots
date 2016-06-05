@@ -1,21 +1,16 @@
 <template>
     <div id="board">
-        <table class="nicklist">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Wins</th>
-                    <th>Moves</th>
-                </tr>
-            </thead>
-            <tr v-for="player in players">
-                <td>{{ player.nick }}</td>
-                <td>{{ player.wins }}</td>
-                <td>{{ player.moves }}</td>
-            </tr>
-        </table>
+        <div class="nicklist">
+            <div v-for="player in players">
+                {{ player.nick }}
+                <span v-if="player.steps > 0">
+                    {{ player.steps }}
+                    <svg class="icon"><use xlink:href="/static/sprite.svg#icon-steps"/></svg>
+                </span>
+            </div>
+        </div>
         <div class="map">
-            <canvas-partial :walls="walls" :goals="goals" :robots="robots" :board="board"></canvas-partial>
+            <canvas-partial :walls="walls" :goals="goals" :robots="robots" :board="board" :current-goal="currentGoal"></canvas-partial>
             <div class="overlay" v-if="winnerToggle" transition="opacity"></div>
             <winner-partial v-if="winnerToggle" :winner="winner" transition="top"></winner-partial>
         </div>
@@ -46,7 +41,8 @@
              goals: [],
              robots: [],
              players: [],
-             board: []
+             board: [],
+             currentGoal: null
          }
      },
      methods: {
@@ -64,12 +60,14 @@
              this.goals = room.goals;
              this.robots = room.robots;
              this.board = room.board;
+             this.currentGoal = room.currentGoal;
+             console.log(room.currentGoal);
              this.players = [];
              room.players.forEach((nick) => {
                  this.players.push({
                      nick: nick,
                      wins: 0,
-                     moves: null
+                     steps: 0
                  });
              });
          },
@@ -86,7 +84,7 @@
                  this.players.push({
                      nick: nick,
                      wins: 0,
-                     moves: null
+                     steps: 0
                  });
              }
              this.messages.push({
@@ -121,9 +119,21 @@
              store.emit('join_room', this.$route.params.uuid);
          },
          showWinnerModal() {
-             this.Modal = true;
-             this.overlayClickListener = true;
+             this.winnerToggle = true;
+             this.overlayClickListener = false;
              this.overlay = true;
+         },
+         showSubmitModal(moves) {
+             console.log("woop2", moves);
+             this.winner = store.nick;
+             this.winnerToggle = true;
+             this.overlayClickListener = false;
+             this.overlay = true;
+         },
+         userSteps(nick, steps) {
+             console.log(nick, steps);
+             var playerIndex = _.findIndex(this.players, { nick: nick });
+             this.players[playerIndex].steps = steps;
          }
      },
      attached() {
@@ -133,8 +143,10 @@
          store.on('player_joined', this.playerJoined);
          store.on('player_left', this.playerLeft);
          store.on('player_changed_nick', this.playerChangedNick);
+         store.on('user_steps', this.userSteps);
          store.on('reconnect', this.reconnected);
          store.event.on('toggle_chat', this.toggleChat);
+         store.event.on('show_submit', this.showSubmitModal);
      },
      detached() {
          store.removeListener('joined_room', this.joinedRoom);
@@ -142,8 +154,10 @@
          store.removeListener('player_joined', this.playerJoined);
          store.removeListener('player_left', this.playerLeft);
          store.removeListener('player_changed_nick', this.playerChangedNick);
+         store.removeListener('user_steps', this.userSteps);
          store.removeListener('reconnect', this.reconnected);
          store.event.removeListener('toggle_chat', this.toggleChat);
+         store.event.removeListener('show_submit', this.showSubmitModal);
          store.emit('leave_room');
      }
  }
@@ -187,6 +201,14 @@
      }
      .nicklist {
          width:177px;
+         div {
+             height:30px;
+             line-height:30px;
+         }
+         svg.icon {
+             width:24px;
+             height:24px;
+         }
      }
      .overlay {
 	     position:absolute;

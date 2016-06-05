@@ -27,7 +27,8 @@ var rooms = [{
     walls: [],
     robots: [],
     goals: [],
-    board: []
+    board: [],
+    currentGoal: null
 }];
 var users = [];
 var emptyRooms = [];
@@ -86,7 +87,6 @@ io.on('connection', function(socket) {
 
                 var players = [];
                 rooms[roomIndex].players.forEach((id, index) => {
-                    console.log(index, _.find(users, { id: id }));
                     players.push(_.find(users, { id: id }).nick);
                 });
                 socket.emit('joined_room', {
@@ -100,6 +100,7 @@ io.on('connection', function(socket) {
                     robots: rooms[roomIndex].robots,
                     goals: rooms[roomIndex].goals,
                     board: rooms[roomIndex].board,
+                    currentGoal: rooms[roomIndex].currentGoal
                 });
 
                 if(socket.room != 'home') {
@@ -133,7 +134,7 @@ io.on('connection', function(socket) {
     socket.on('create_room', function(name, isPublic, drinking) {
         if(_.findIndex(rooms, { name: name, isPublic: true }) == -1 && name && name.length <= 16 && socket.room == 'home') {
             var map = rico.generateMap();
-            /* console.log(map.board); */
+
             /* Create room with a uuid and general game stuff. */
             var room = {
                 uuid: uuid.v4(),
@@ -146,7 +147,8 @@ io.on('connection', function(socket) {
                 walls: map.walls,
                 robots: rico.placeRobots(map.walls),
                 goals: map.goals,
-                board: map.board
+                board: map.board,
+                currentGoal: generateGoal(map.goals)
             }
             rooms.push(room);
             console.log(socket.nick + ' created ' + room.name);
@@ -218,6 +220,12 @@ io.on('connection', function(socket) {
         }
     });
 
+    /* User submitted a solution. */
+    socket.on('reached_goal', function(moves) {
+        var steps = moves.length;
+        io.to(socket.room).emit('user_steps', socket.nick, steps);
+    });
+
     /* The user disconnects. */
     socket.on('disconnect', function () {
         users.splice(_.findIndex(users, { id: socket.id.substr(2) }), 1);
@@ -268,6 +276,11 @@ io.on('connection', function(socket) {
                 args: args
             });
         }
+    }
+
+    /* Generate a new goal. */
+    function generateGoal(goals) {
+        return goals[Math.floor(Math.random() * goals.length)];
     }
 });
 

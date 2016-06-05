@@ -34,7 +34,6 @@
         },
         attached() {
             this.color = this.colorRobot();
-            console.log(this.class);
         }
     }
 </script>
